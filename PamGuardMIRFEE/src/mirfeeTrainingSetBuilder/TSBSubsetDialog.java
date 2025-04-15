@@ -308,7 +308,7 @@ public class TSBSubsetDialog extends PamDialog {
 				if (returnVal != fc.APPROVE_OPTION) return;
 				File f = getSelectedFileWithExtension(fc);
 				if (!f.exists()) {
-					tsbControl.SimpleErrorDialog("Selected file does not exist.", 150);
+					tsbControl.simpleErrorDialog("Selected file does not exist.", 150);
 					return;
 				}
 				boolean succeeded;
@@ -318,7 +318,7 @@ public class TSBSubsetDialog extends PamDialog {
 			} else {
 				if (featuresCSVField.getText().length() == 0 || wmatCSVField.getText().length() == 0) {
 					//reloadButton.setEnabled(false);
-					tsbControl.SimpleErrorDialog("Both feature data and WMAT data files need to be selected.", 150);
+					tsbControl.simpleErrorDialog("Both feature data and WMAT data files need to be selected.", 150);
 					return;
 				}
 				if (!loadFE(new File(featuresCSVField.getText()))) return;
@@ -342,13 +342,13 @@ public class TSBSubsetDialog extends PamDialog {
 			sc = new Scanner(f);
 			if (!sc.hasNextLine()) {
 				sc.close();
-				tsbControl.SimpleErrorDialog("Selected file is blank.", 150);
+				tsbControl.simpleErrorDialog("Selected file is blank.", 150);
 				return false;
 			}
 			String nextLine = sc.nextLine();
 			if (!nextLine.equals("EXTRACTOR PARAMS START")) {
 				sc.close();
-				tsbControl.SimpleErrorDialog("Selected file does not contain properly-formatted "
+				tsbControl.simpleErrorDialog("Selected file does not contain properly-formatted "
 						+ "Feature Extractor settings info.", 150);
 				return false;
 			}
@@ -358,7 +358,7 @@ public class TSBSubsetDialog extends PamDialog {
 				if (nextLine.equals("EXTRACTOR PARAMS END")) {
 					if (!sc.hasNextLine()) {
 						sc.close();
-						tsbControl.SimpleErrorDialog("Selected file does not contain properly-formatted "
+						tsbControl.simpleErrorDialog("Selected file does not contain properly-formatted "
 								+ "Feature Extractor settings info.", 150);
 						return false;
 					}
@@ -393,14 +393,14 @@ public class TSBSubsetDialog extends PamDialog {
 										message += "\n(none) -> "+tsbControl.getFeatureList().get(i);
 								}
 							}
-							tsbControl.SimpleErrorDialog(message, 300);
+							tsbControl.simpleErrorDialog(message, 300);
 							return false;
 						}
 						outpFeatures = tsbControl.getFeatureList();
 					} else {
 						if (!nextLine.startsWith(featureTestLine+",")) {
 							sc.close();
-							tsbControl.SimpleErrorDialog("Selected file not formatted like Feature Extractor output.", 150);
+							tsbControl.simpleErrorDialog("Selected file not formatted like Feature Extractor output.", 150);
 							return false;
 						}
 						String[] nextSplit = nextLine.split(",");
@@ -415,7 +415,7 @@ public class TSBSubsetDialog extends PamDialog {
 			}
 			if (!ended) {
 				sc.close();
-				tsbControl.SimpleErrorDialog("Selected file not formatted like Feature Extractor output.", 150);
+				tsbControl.simpleErrorDialog("Selected file not formatted like Feature Extractor output.", 150);
 				return false;
 			}
 			if (tsbControl.getSubsetList().size() > 0) {
@@ -423,7 +423,7 @@ public class TSBSubsetDialog extends PamDialog {
 				ArrayList<String> unmatched = placeholderParams.findUnmatchedParameters(tsbControl.getFEParamsMap(), outpSettingsMap, false);
 				if (unmatched.size() > 0) {
 					sc.close();
-					tsbControl.SimpleErrorDialog("Selected file's Feature Extractor settings do not match those of "
+					tsbControl.simpleErrorDialog("Selected file's Feature Extractor settings do not match those of "
 							+ "subsets loaded into the table.", 150);
 					return false;
 				}
@@ -445,11 +445,11 @@ public class TSBSubsetDialog extends PamDialog {
 			sc.close();
 		} catch (Exception e2) {
 			e2.printStackTrace();
-			tsbControl.SimpleErrorDialog("Error occured while attempting to parse selected file", 150);
+			tsbControl.simpleErrorDialog("Error occured while attempting to parse selected file", 150);
 			return false;
 		}
 		if (outpFEList.size() == 0) {
-			tsbControl.SimpleErrorDialog("Selected file contained no valid entries.", 150);
+			tsbControl.simpleErrorDialog("Selected file contained no valid entries.", 150);
 			return false;
 		}
 		featuresEntriesList = outpFEList;
@@ -475,14 +475,14 @@ public class TSBSubsetDialog extends PamDialog {
 			sc = new Scanner(f);
 			if (!sc.hasNextLine()) {
 				sc.close();
-				tsbControl.SimpleErrorDialog("Selected file is blank.", 150);
+				tsbControl.simpleErrorDialog("Selected file is blank.", 150);
 				return false;
 			}
 			ArrayList<String[]> outpWMATList = new ArrayList<String[]>();
 			String firstLine = sc.nextLine();
 			if (!firstLine.startsWith("uid,datetime,lf,hf,duration,amplitude,species,calltype,comment")) {
 				sc.close();
-				tsbControl.SimpleErrorDialog("Selected file not formatted like WMAT output.", 150);
+				tsbControl.simpleErrorDialog("Selected file not formatted like WMAT output.", 150);
 				return false;
 			}
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss+SSS");
@@ -514,12 +514,12 @@ public class TSBSubsetDialog extends PamDialog {
 				wmatEntriesList = outpWMATList;
 				wmatCSVField.setText(f.getPath());
 			} else {
-				tsbControl.SimpleErrorDialog("Selected file contained no valid entries.", 150);
+				tsbControl.simpleErrorDialog("Selected file contained no valid entries.", 150);
 				return false;
 			}
 		} catch (Exception e2) {
 			e2.printStackTrace();
-			tsbControl.SimpleErrorDialog("Error occured while attempting to parse selected file", 150);
+			tsbControl.simpleErrorDialog("Error occured while attempting to parse selected file", 150);
 			return false;
 		}
 		return true;
@@ -629,7 +629,7 @@ public class TSBSubsetDialog extends PamDialog {
 		if (validEntriesList.size() > 0) {
 			reloadButton.setEnabled(true);
 		} else {
-			tsbControl.SimpleErrorDialog("Selected files contain no matching valid data.", 150);
+			tsbControl.simpleErrorDialog("Selected files contain no matching valid data.", 150);
 		}
 	}
 	
@@ -683,7 +683,7 @@ public class TSBSubsetDialog extends PamDialog {
 	@Override
 	public boolean getParams() {
 		if (checkList.getSelectedIndices().length == 0) {
-			tsbControl.SimpleErrorDialog("No classes have been selected.", 150);
+			tsbControl.simpleErrorDialog("No classes have been selected.", 150);
 			return false;
 		}
 		TSBSubset outp = new TSBSubset();
@@ -692,7 +692,7 @@ public class TSBSubsetDialog extends PamDialog {
 		ArrayList<TSBSubset> sl = tsbControl.getSubsetList();
 		for (int i = 0; i < sl.size(); i++) {
 			if (sl.get(i).id.equals(outp.id) && !outp.id.equals(oldID)) {
-				tsbControl.SimpleErrorDialog("Selected ID has already been taken.", 150);
+				tsbControl.simpleErrorDialog("Selected ID has already been taken.", 150);
 				return false;
 			}
 		}

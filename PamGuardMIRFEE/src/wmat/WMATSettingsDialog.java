@@ -478,7 +478,7 @@ public class WMATSettingsDialog extends PamDialog {
 				sc.close();
 			} catch (Exception e2) {
 				e2.printStackTrace();
-				wmatControl.SimpleErrorDialog("Error occurred while reading selected file - see console for details.");
+				wmatControl.simpleErrorDialog("Error occurred while reading selected file - see console for details.");
 				return;
 			}
 			if (unusables.size() > 0) {
@@ -536,7 +536,7 @@ public class WMATSettingsDialog extends PamDialog {
 					f.createNewFile();
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					wmatControl.SimpleErrorDialog("Could not create new file.\nSee console for details.");
+					wmatControl.simpleErrorDialog("Could not create new file.\nSee console for details.");
 					return;
 				}
 			}
@@ -557,7 +557,7 @@ public class WMATSettingsDialog extends PamDialog {
 						JOptionPane.INFORMATION_MESSAGE);
 			} catch (Exception e2) {
 				System.out.println(e2);
-				wmatControl.SimpleErrorDialog();
+				wmatControl.simpleErrorDialog();
 			}
 		}
 	}
@@ -639,7 +639,7 @@ public class WMATSettingsDialog extends PamDialog {
 	public boolean getParams() {
 		WMATParameters newParams = new WMATParameters();
 		if (sqlTableField.getText().length() == 0) {
-			wmatControl.SimpleErrorDialog("SQL table must have a name.");
+			wmatControl.simpleErrorDialog("SQL table must have a name.");
 			return false;
 		}
 		

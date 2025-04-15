@@ -33,6 +33,7 @@ from builtins import FileNotFoundError
 # for each cluster, and sound clips should be fed into it via addClip.
 class FEThread():
     def __init__(self, y_nr_name: str, y_nr: np.ndarray, txtParams: list):
+        np.set_printoptions(legacy='1.25')
         #print("In thread __init__.")
         self.active = True
         self.clipList = []

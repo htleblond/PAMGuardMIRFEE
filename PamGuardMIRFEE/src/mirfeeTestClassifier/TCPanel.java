@@ -25,7 +25,7 @@ public class TCPanel extends LCPanel {
 	protected void bestFeaturesButtonAction() {
 		TCParameters params = getControl().getParams();
 		if (params.getTrainingSetInfo() == null || params.getTrainPath().equals("")) {
-			getControl().SimpleErrorDialog("Training and/or testing sets have not been configured yet.", 250);
+			getControl().simpleErrorDialog("Training and/or testing sets have not been configured yet.", 250);
 			return;
 		}
 		wdThread = new LCWaitingDialogThread(getControl().getGuiFrame(), getControl(), "Waiting for response from Python script...");

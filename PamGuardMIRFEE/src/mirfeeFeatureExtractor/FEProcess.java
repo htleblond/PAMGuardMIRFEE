@@ -165,7 +165,7 @@ public class FEProcess extends PamProcess {
 		prevDU = null;
 		clusterCountID = 0;
 		
-		if (feControl.getParams().inputFromCSV) {
+		if (feControl.getParams().inputFromWMATorMTSF) {
 			fillClipRequestQueueViaCSV();
 		}
 		
@@ -266,7 +266,7 @@ public class FEProcess extends PamProcess {
 		
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss+SSS");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
-		ArrayList<FEInputDataObject> entries = feControl.getParams().inputDataEntries;
+		ArrayList<FEInputDataObject> entries = feControl.getWMATInputDataEntries();
 		int startPoint; // This is for reducing time complexity.
 		// Basically, it skips over entries at an interval of sqrt(entries.size()) and goes back an instance once it passes the first corresponding timestamp.
 		// Worst-case time complexity per audio file is O(2n^0.5), which is substantially better than the previous O(n).
@@ -346,7 +346,7 @@ public class FEProcess extends PamProcess {
 		int nBlocks = 1;
 		clipBlockProcesses = new ClipBlockProcess[nBlocks];
 		PamDataBlock aDataBlock;
-		if (feControl.getParams().inputFromCSV) {
+		if (feControl.getParams().inputFromWMATorMTSF) {
 			aDataBlock = new PamDataBlock<FESliceDataUnit>(FESliceDataUnit.class, processName, this, 0);
 			aDataBlock.setSampleRate(feControl.getParams().sr, false);
 		} else {
@@ -423,7 +423,7 @@ public class FEProcess extends PamProcess {
 			if (prevDU == null || !params.miscClusterChecked || (params.audioNRChecked && nrData == null)) countUp = true;
 			else {
 				long endTime = prevDU.getEndTimeInMilliseconds();
-				if (!params.inputFromCSV)
+				if (!params.inputFromWMATorMTSF)
 					endTime = feControl.convertFromLocalToUTC(endTime);
 				if (endTime + params.miscJoinDistance 
 					< feControl.convertFromLocalToUTC(dataUnit.getTimeMilliseconds())) countUp = true;
@@ -498,12 +498,12 @@ public class FEProcess extends PamProcess {
 			String clusterID = createClusterID(dataUnit.getUID(), clusterCountID, false);
 			long[] sliceStartSamples;
 			double[] sliceFreqs;
-			if (params.inputFromCSV && params.inputFilesAreMTSF()) {
+			if (params.inputFromWMATorMTSF && params.inputFilesAreMTSF()) {
 				FETrainingDataUnit tdu = (FETrainingDataUnit) dataUnit;
 				sliceStartSamples = new long[] {-1,-1};
 				sliceFreqs = new double[] {-1,-1};
 				clusterID = tdu.clusterID;
-			} else if (params.inputFromCSV && !params.inputFilesAreMTSF()) {
+			} else if (params.inputFromWMATorMTSF && !params.inputFilesAreMTSF()) {
 				FESliceDataUnit sdu = (FESliceDataUnit) dataUnit;
 				sliceStartSamples = sdu.sliceStartSamples;
 				sliceFreqs = sdu.sliceFreqs;
@@ -529,7 +529,7 @@ public class FEProcess extends PamProcess {
 			}
 			String[] extras = new String[8];
 			extras[0] = "uid="+String.valueOf(dataUnit.getUID());
-			if (params.inputFromCSV)
+			if (params.inputFromWMATorMTSF)
 				extras[1] = "datelong="+String.valueOf(dataUnit.getTimeMilliseconds());
 			else
 				extras[1] = "datelong="+String.valueOf(feControl.convertFromLocalToUTC(dataUnit.getTimeMilliseconds()));
@@ -542,7 +542,7 @@ public class FEProcess extends PamProcess {
 				extras[6] += "),("+String.valueOf(sliceStartSamples[i])+","+String.valueOf(sliceFreqs[i]);
 			extras[6] += ")]";
 			extras[7] = "";
-			if (params.inputFromCSV && params.inputFilesAreMTSF()) {
+			if (params.inputFromWMATorMTSF && params.inputFilesAreMTSF()) {
 				FETrainingDataUnit tdu = (FETrainingDataUnit) dataUnit;
 				extras[7] += "pe_cluster_id=\""+clusterID+"\"";
 				extras[7] += ",pe_location=\""+tdu.location+"\"";
@@ -666,7 +666,7 @@ public class FEProcess extends PamProcess {
 				ZonedDateTime zdt = ZonedDateTime.now();
 				currTime = feControl.convertBetweenTimeZones(currTime, ZonedDateTime.now().getZone().getId(), sfd.getSettings().getTimeZoneName());
 				
-				if (feControl.getParams().inputFromCSV) {
+				if (feControl.getParams().inputFromWMATorMTSF) {
 					while (csvClipList.size() > 0) {
 						// Note that csvClipList should already be sorted by end time.
 						ClipRequest cr = csvClipList.get(0);

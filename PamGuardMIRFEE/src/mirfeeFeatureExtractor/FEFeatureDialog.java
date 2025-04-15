@@ -951,7 +951,7 @@ public class FEFeatureDialog extends PamDialog {
 					int freq = (int) contrast_freq_spinner.getValue();
 					int n_bands = (int) contrast_nbands_spinner.getValue();
 					if (freq * Math.pow(2, n_bands) >= sr/2) {
-						feControl.SimpleErrorDialog("Frequency cutoff * (2 ^ number of bands) must be less than "
+						feControl.simpleErrorDialog("Frequency cutoff * (2 ^ number of bands) must be less than "
 								+ "half the sampling rate.", 300);
 						return;
 					}
@@ -1010,7 +1010,7 @@ public class FEFeatureDialog extends PamDialog {
 					if (inserting) {
 						int tableSelection = table.getSelectedRow();
 						if (tableSelection == -1) {
-							feControl.SimpleErrorDialog("No feature in the table has been selected.");
+							feControl.simpleErrorDialog("No feature in the table has been selected.");
 							return;
 						}
 						dtmodel.insertRow(tableSelection, new Object[] {selection, outp.toLowerCase()});

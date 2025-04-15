@@ -138,7 +138,7 @@ public class LCExportDialog extends PamDialog {
 					outp.createNewFile();
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					lcControl.SimpleErrorDialog("Could not create new file.\nSee console for details.", 300);
+					lcControl.simpleErrorDialog("Could not create new file.\nSee console for details.", 300);
 					return null;
 				}
 			}
@@ -387,12 +387,12 @@ public class LCExportDialog extends PamDialog {
 	 * Produces Feature Extractor settings info from a loaded Feature Extractor module for "full results".
 	 */
 	protected StringBuilder printParamsFromFEParametersObject(StringBuilder sb, FEParameters feParams) {
-		if (feParams.inputFromCSV) {
+		if (feParams.inputFromWMATorMTSF) {
 			sb.append("Input source: CSV file\n");
 			sb.append("Input source name: ");
-			for (int i = 0; i < feParams.inputDataFiles.size(); i++) {
-				sb.append(feParams.inputDataFiles.get(i));
-				if (i < feParams.inputDataFiles.size()-1) sb.append(", ");
+			for (int i = 0; i < feParams.inputWMATFileNames.size(); i++) {
+				sb.append(new File(feParams.inputWMATFileNames.get(i)));
+				if (i < feParams.inputWMATFileNames.size()-1) sb.append(", ");
 			}
 			sb.append("\n");
 		} else {
@@ -731,7 +731,7 @@ public class LCExportDialog extends PamDialog {
 			pw = new PrintWriter(f);
 		} catch (Exception e) {
 			e.printStackTrace();
-			lcControl.SimpleErrorDialog("Error: Could not create PrintWriter with selected file.", 300);
+			lcControl.simpleErrorDialog("Error: Could not create PrintWriter with selected file.", 300);
 			return false;
 		}
 		sb = new StringBuilder();

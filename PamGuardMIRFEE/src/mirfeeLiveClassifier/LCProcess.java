@@ -136,21 +136,21 @@ public class LCProcess extends PamProcess {
 		FEDataBlock fedb = (FEDataBlock) this.getParentDataBlock();
 		if (fedb == null) {
 			lcControl.setTrainingSetStatus(false);
-			lcControl.SimpleErrorDialog("Live Classifier Error: The selected Feature Extractor appears to no longer "
+			lcControl.simpleErrorDialog("Live Classifier Error: The selected Feature Extractor appears to no longer "
 					+ "exist. The Live Classifier cannot function until this is fixed.", 250);
 			return;
 		}
 		String[][] feFeatures = fedb.getFeatureList();
 		if (feFeatures.length != lcControl.getParams().getFeatureList().size()) {
 			lcControl.setTrainingSetStatus(false);
-			lcControl.SimpleErrorDialog("Live Classifier Error: The features of the selected Feature Extractor and the features "
+			lcControl.simpleErrorDialog("Live Classifier Error: The features of the selected Feature Extractor and the features "
 					+ "in the loaded training set do not match. The Live Classifier cannot function until this is fixed.", 250);
 			return;
 		}
 		for (int i = 0; i < feFeatures.length; i++) {
 			if (!feFeatures[i][1].equals(lcControl.getParams().getFeatureList().get(i))) {
 				lcControl.setTrainingSetStatus(false);
-				lcControl.SimpleErrorDialog("Live Classifier Error: The features of the selected Feature Extractor and the features "
+				lcControl.simpleErrorDialog("Live Classifier Error: The features of the selected Feature Extractor and the features "
 						+ "in the loaded training set do not match. The Live Classifier cannot function until this is fixed.", 250);
 				return;
 			}

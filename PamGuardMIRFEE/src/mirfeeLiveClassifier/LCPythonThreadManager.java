@@ -194,7 +194,7 @@ public class LCPythonThreadManager{
 			lcControl.setModelFittingStatus(true);
 		}
 		if (outpstr.equals("ERROR - ModelManager is empty.")) {
-			lcControl.SimpleErrorDialog("Whoops - no training models have been initialized yet.", 350);
+			lcControl.simpleErrorDialog("Whoops - no training models have been initialized yet.", 350);
 		}
 		if (outpstr.startsWith("ERROR - Input test entry found in all training sets: ")) {
 			String[] info = outpstr.replace("ERROR - Input test entry found in all training sets: ", "").split(", ");
@@ -302,7 +302,7 @@ public class LCPythonThreadManager{
 	}
 	
 	protected void signalImportError(String missingLibrary) {
-		getControl().SimpleErrorDialog("Warning: The classifier's Python script was unable to import "+missingLibrary+", "
+		getControl().simpleErrorDialog("Warning: The classifier's Python script was unable to import "+missingLibrary+", "
 				+ "so it may not work properly. To fix this, try running the .bat file that comes with the MIRFEE plugin, or manually "
 				+ "installing that library via pip.", 300);
 	}

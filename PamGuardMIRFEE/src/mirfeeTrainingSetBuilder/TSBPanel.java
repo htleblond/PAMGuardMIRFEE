@@ -327,7 +327,7 @@ public class TSBPanel extends PamBorderPanel {
 			if (res != JOptionPane.OK_OPTION) return;
 			if (box.getSelectedIndex() == 0) {
 				if (tsbControl.getSubsetList().size() == 0) {
-					tsbControl.SimpleErrorDialog("Training data must be loaded into the table first.", 250);
+					tsbControl.simpleErrorDialog("Training data must be loaded into the table first.", 250);
 					return;
 				}
 			}
@@ -358,7 +358,7 @@ public class TSBPanel extends PamBorderPanel {
 		}
 		File f = fc.getSelectedFile();
 		if (!f.exists()) {
-			tsbControl.SimpleErrorDialog("Selected file does not exist.", 250);
+			tsbControl.simpleErrorDialog("Selected file does not exist.", 250);
 			return;
 		}
 		if (subsetTable.getRowCount() > 0) {
@@ -384,7 +384,7 @@ public class TSBPanel extends PamBorderPanel {
 		try {
 			sc = new Scanner(f);
 			if (!sc.hasNextLine()) {
-				tsbControl.SimpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
+				tsbControl.simpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
 				sc.close();
 				return;
 			}
@@ -399,19 +399,19 @@ public class TSBPanel extends PamBorderPanel {
 				}
 				if (sc.hasNextLine()) firstLine = sc.nextLine();
 				else {
-					tsbControl.SimpleErrorDialog("Selected file does not contain any valid entries.", 250);
+					tsbControl.simpleErrorDialog("Selected file does not contain any valid entries.", 250);
 					sc.close();
 					return;
 				}
 			}
 			firstSplit = firstLine.split(",");
 			if (firstSplit.length < 10) {
-				tsbControl.SimpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
+				tsbControl.simpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
 				sc.close();
 				return;
 			}
 			if (!(firstLine.startsWith("cluster,uid,location,date,duration,lf,hf,label,"))) {
-				tsbControl.SimpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
+				tsbControl.simpleErrorDialog("Selected file is not formatted like Training Set Builder output.", 250);
 				sc.close();
 				return;
 			}
@@ -446,7 +446,7 @@ public class TSBPanel extends PamBorderPanel {
 			}
 			sc.close();
 		} catch (Exception e2) {
-			tsbControl.SimpleErrorDialog("Exception thrown when parsing through feature data file.", 250);
+			tsbControl.simpleErrorDialog("Exception thrown when parsing through feature data file.", 250);
 			e2.printStackTrace();
 			if (sc != null) {
 				sc.close();
@@ -454,7 +454,7 @@ public class TSBPanel extends PamBorderPanel {
 			return;
 		}
 		if (dataLines.size() == 0) {
-			tsbControl.SimpleErrorDialog("Selected file contains no valid data entries", 250);
+			tsbControl.simpleErrorDialog("Selected file contains no valid data entries", 250);
 			return;
 		}
 		ArrayList<String> idList = new ArrayList<String>();
@@ -625,7 +625,7 @@ public class TSBPanel extends PamBorderPanel {
 			if (returnVal == fc.APPROVE_OPTION) {
 				File f = fc.getSelectedFile();
 				if (f.getName().length() == 0) {
-					tsbControl.SimpleErrorDialog("Invalid file name.", 200);
+					tsbControl.simpleErrorDialog("Invalid file name.", 200);
 					return;
 				}
 				if (f.getPath().length() >= 4) {
@@ -644,14 +644,14 @@ public class TSBPanel extends PamBorderPanel {
 						return;
 					}
 					if (!f.delete()) {
-						tsbControl.SimpleErrorDialog("Could not delete selected file.", 300);
+						tsbControl.simpleErrorDialog("Could not delete selected file.", 300);
 						return;
 					}
 				}
 				try {
 					f.createNewFile();
 				} catch (IOException e1) {
-					tsbControl.SimpleErrorDialog("Could not create new blank file with selected file name.", 300);
+					tsbControl.simpleErrorDialog("Could not create new blank file with selected file name.", 300);
 					return;
 				}
 				ArrayList<String[]> outpList = new ArrayList<String[]>();
@@ -777,7 +777,7 @@ public class TSBPanel extends PamBorderPanel {
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e2) {
 					System.out.println(e2);
-					tsbControl.SimpleErrorDialog("Could not fully write to .mtsf file. See console for more details.", 300);
+					tsbControl.simpleErrorDialog("Could not fully write to .mtsf file. See console for more details.", 300);
 				}
 			}
 		} else {

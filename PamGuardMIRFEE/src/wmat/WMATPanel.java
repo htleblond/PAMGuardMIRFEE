@@ -480,7 +480,7 @@ public class WMATPanel {
 				if (!vals[1].equals("<skip>")) calltypeButton.doClick();
 				return;
 			}
-			wmatControl.SimpleErrorDialog("Label(s) assigned to hotkey are no longer in list(s).");
+			wmatControl.simpleErrorDialog("Label(s) assigned to hotkey are no longer in list(s).");
 		}
 		@Override
 		public boolean isEnabled() {
@@ -508,7 +508,7 @@ public class WMATPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (ttable.getRowCount() == 0) {
-				wmatControl.SimpleErrorDialog("No data has been loaded into the table.");
+				wmatControl.simpleErrorDialog("No data has been loaded into the table.");
 				return;
 			}
 			int startIndex = 0;
@@ -613,7 +613,7 @@ public class WMATPanel {
 					}
 				} catch (ParseException e1) {
 					e1.printStackTrace();
-					//SimpleErrorDialog();
+					//simpleErrorDialog();
 				}
 			}
 		}
@@ -803,7 +803,7 @@ public class WMATPanel {
 						updateFromFullTable();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						SimpleErrorDialog();
+						simpleErrorDialog();
 					}
 					fileField.setText(defaultloc);
 				}
@@ -856,11 +856,11 @@ public class WMATPanel {
 					PamDataBlock db = wmatControl.getPamController().getDetectorDataBlock(wmatControl.getParams().slicedataSourceName);
 					if (db != null) wmDetector = (WhistleToneConnectProcess) db.getParentProcess();
 				} else {
-					wmatControl.SimpleErrorDialog("A Whistle and Moan Detector contour source should be selected in the settings first.");
+					wmatControl.simpleErrorDialog("A Whistle and Moan Detector contour source should be selected in the settings first.");
 					return;
 				}
 				if (wmDetector == null) {
-					wmatControl.SimpleErrorDialog("No actual Whistle and Moan Detector module appears to be in this configuration. "
+					wmatControl.simpleErrorDialog("No actual Whistle and Moan Detector module appears to be in this configuration. "
 							+ "You should add one and ensure the sampling rate, FFT length and FFT hop match those that the contours "
 							+ "in the binary files were processed with.");
 					return;
@@ -896,7 +896,7 @@ public class WMATPanel {
 				
 				if (fileList.size() == 0) {
 					binaryLoadingBarWindow.setVisible(false);
-					wmatControl.SimpleErrorDialog("No Whistle and Moan Detector binary files were found in the specified "
+					wmatControl.simpleErrorDialog("No Whistle and Moan Detector binary files were found in the specified "
 							+ "binary file folder or any of its subfolders.");
 					return;
 				}
@@ -937,7 +937,7 @@ public class WMATPanel {
 						updateFromFullTable();
 					} catch (Exception e2) {
 						e2.printStackTrace();
-						SimpleErrorDialog();
+						simpleErrorDialog();
 					}
 				}
 			}
@@ -1050,7 +1050,7 @@ public class WMATPanel {
 	class ImportListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			if (ttable.getRowCount() == 0) {
-				SimpleErrorDialog(String.format("<html><body style='width: %1spx'>%1s", 300,
+				simpleErrorDialog(String.format("<html><body style='width: %1spx'>%1s", 300,
 						"Binary data must be loaded in first."
 						+ "\n(The purpose of this feature is to provide a backup for any labelling work "
 						+ "in case the database connection ends, not to be a replacement for binary files or the database.)"));
@@ -1080,7 +1080,7 @@ public class WMATPanel {
 			}
 			File f = getSelectedFileWithExtension(fc);
 			if (!f.exists()) {
-				SimpleErrorDialog("Selected file does not exist.");
+				simpleErrorDialog("Selected file does not exist.");
 				return;
 			}
 			int matched = 0;
@@ -1132,7 +1132,7 @@ public class WMATPanel {
 				}
 			} catch (Exception e2) {
 				e2.printStackTrace();
-				SimpleErrorDialog("Parsing error encountered while reading file.");
+				simpleErrorDialog("Parsing error encountered while reading file.");
 			}
 			updateFromFullTable();
 			JOptionPane.showMessageDialog(wmatControl.getGuiFrame(),
@@ -1152,7 +1152,7 @@ public class WMATPanel {
 	class ExportListener implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			if (ttable.getRowCount() == 0) {
-				SimpleErrorDialog("Table is currently empty.");
+				simpleErrorDialog("Table is currently empty.");
 			}	
 			fc = new PamFileChooser();
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -1179,7 +1179,7 @@ public class WMATPanel {
 					f.createNewFile();
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					SimpleErrorDialog("Could not create new file.\nSee console for details.");
+					simpleErrorDialog("Could not create new file.\nSee console for details.");
 					return;
 				}
 			}
@@ -1254,7 +1254,7 @@ public class WMATPanel {
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					SimpleErrorDialog();
+					simpleErrorDialog();
 					return;
 				}
 			} else if (fn.endsWith(".csv")) {
@@ -1285,7 +1285,7 @@ public class WMATPanel {
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch (Exception e2) {
 					e2.printStackTrace();
-					SimpleErrorDialog();
+					simpleErrorDialog();
 					return;
 				}
 			}
@@ -1332,7 +1332,7 @@ public class WMATPanel {
 				//testLogger.closeConnection();
 				fileField.setText(defaultloc);
 			} else {
-				wmatControl.SimpleErrorDialog("Error: SQL logging function was not created.");
+				wmatControl.simpleErrorDialog("Error: SQL logging function was not created.");
 			}
 		}
 	}
@@ -1372,7 +1372,7 @@ public class WMATPanel {
 						vsm.loadData(true);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
-						SimpleErrorDialog();
+						simpleErrorDialog();
 					}
 					return;
 				}
@@ -1458,7 +1458,7 @@ public class WMATPanel {
 	/**
 	 * Streamlined error dialog.
 	 */
-	public void SimpleErrorDialog() {
+	public void simpleErrorDialog() {
 		JOptionPane.showMessageDialog(wmatControl.getGuiFrame(),
 			"An error has occured.\nSee console for details.",
 			"",
@@ -1468,7 +1468,7 @@ public class WMATPanel {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(wmatControl.getGuiFrame(),
 			inptext,
 			"",

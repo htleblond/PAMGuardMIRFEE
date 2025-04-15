@@ -66,7 +66,7 @@ public class TSBLabelSelectionDialog extends PamDialog {
 	public boolean getParams() {
 		int[] selectedIndices = labelSelectionList.getSelectedIndices();
 	/*	if (selectedIndices.length < 2) { // Could be testing set with only one class.
-			tsbControl.SimpleErrorDialog("At least two labels must be selected.", 150);
+			tsbControl.simpleErrorDialog("At least two labels must be selected.", 150);
 			return false;
 		} */
 		ArrayList<String> outp = new ArrayList<String>();

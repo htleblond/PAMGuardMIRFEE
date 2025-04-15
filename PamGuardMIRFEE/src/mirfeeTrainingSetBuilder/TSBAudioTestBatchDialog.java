@@ -465,43 +465,43 @@ public class TSBAudioTestBatchDialog extends PamDialog {
 			if (maximumCheck.isSelected()) {
 				int maxNum = Integer.valueOf(maximumField.getText());
 				if (maxNum < 1) {
-					tsbControl.SimpleErrorDialog("Maximum detections per file must be at least 1.", 250);
+					tsbControl.simpleErrorDialog("Maximum detections per file must be at least 1.", 250);
 					return false;
 				} else if (minNum > maxNum) {
-					tsbControl.SimpleErrorDialog("Maximum detections per file cannot be less than minimum detections per file.", 250);
+					tsbControl.simpleErrorDialog("Maximum detections per file cannot be less than minimum detections per file.", 250);
 					return false;
 				}
 			}
 			if (maximumClassCheck.isSelected()) {
 				int maxClassNum = Integer.valueOf(maximumClassField.getText());
 				if (maxClassNum < 1) {
-					tsbControl.SimpleErrorDialog("Maximum detections per class must be at least (and preferably much greater than) 1.", 250);
+					tsbControl.simpleErrorDialog("Maximum detections per class must be at least (and preferably much greater than) 1.", 250);
 					return false;
 				} else if (minNum > maxClassNum) {
-					tsbControl.SimpleErrorDialog("Maximum detections per class cannot be less than minimum detections per file.", 250);
+					tsbControl.simpleErrorDialog("Maximum detections per class cannot be less than minimum detections per file.", 250);
 					return false;
 				}
 			}
 		} catch (Exception e) {
-			tsbControl.SimpleErrorDialog("Invalid settings.", 250);
+			tsbControl.simpleErrorDialog("Invalid settings.", 250);
 			return false;
 		}
 		if (!useLoaded && dataFileList.size() == 0) {
-			tsbControl.SimpleErrorDialog("No data files have been selected.", 250);
+			tsbControl.simpleErrorDialog("No data files have been selected.", 250);
 			return false;
 		}
 		if (audioFolderList.size() == 0) {
-			tsbControl.SimpleErrorDialog("No audio folders have been selected.", 250);
+			tsbControl.simpleErrorDialog("No audio folders have been selected.", 250);
 			return false;
 		}
 		if (outputFolderField.getText().length() > 0) {
 			File test = new File(outputFolderField.getText());
 			if (!test.exists()) {
-				tsbControl.SimpleErrorDialog("Selected output folder does not exist.", 250);
+				tsbControl.simpleErrorDialog("Selected output folder does not exist.", 250);
 				return false;
 			}
 		} else {
-			tsbControl.SimpleErrorDialog("No output folder has been selected.", 250);
+			tsbControl.simpleErrorDialog("No output folder has been selected.", 250);
 			return false;
 		}
 		
@@ -586,7 +586,7 @@ public class TSBAudioTestBatchDialog extends PamDialog {
 		}
 		if (wavList.size() == 0) {
 			loadingBarWindow.setVisible(false);
-			tsbControl.SimpleErrorDialog("No audio files were found in the selected folders.", 250);
+			tsbControl.simpleErrorDialog("No audio files were found in the selected folders.", 250);
 			return false;
 		}
 		if (interrupted) return true;

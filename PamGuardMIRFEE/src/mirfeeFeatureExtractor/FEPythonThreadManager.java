@@ -564,7 +564,7 @@ public class FEPythonThreadManager {
 				for (int j = 0; j < currList.size(); j++) {
 					long datetime;
 					long duration;
-					if (feControl.getParams().inputFromCSV && feControl.getParams().inputFilesAreMTSF()) {
+					if (feControl.getParams().inputFromWMATorMTSF && feControl.getParams().inputFilesAreMTSF()) {
 						datetime = Long.valueOf(currList.get(j)[3]);
 						duration = (long) Double.valueOf(currList.get(j)[4]).doubleValue();
 					} else {
@@ -616,7 +616,7 @@ public class FEPythonThreadManager {
 					for (int j = 0; j < currList.size(); j++) {
 						cc.uids[j] = Long.valueOf(currList.get(j)[1]);
 						int index = 2;
-						if (feControl.getParams().inputFromCSV && feControl.getParams().inputFilesAreMTSF()) {
+						if (feControl.getParams().inputFromWMATorMTSF && feControl.getParams().inputFilesAreMTSF()) {
 							String location = currList.get(j)[index++];
 							cc.locations[j] = location.substring(1, location.length()-1);
 						}
@@ -745,7 +745,7 @@ public class FEPythonThreadManager {
 	}
 	
 	protected void signalImportError(String missingLibrary) {
-		feControl.SimpleErrorDialog("Warning: The Feature Extractor's Python script was unable to import "+missingLibrary+", "
+		feControl.simpleErrorDialog("Warning: The Feature Extractor's Python script was unable to import "+missingLibrary+", "
 				+ "so it may not work properly. To fix this, try running the .bat file that comes with the MIRFEE plugin, or manually "
 				+ "installing that library via pip.", 300);
 	}

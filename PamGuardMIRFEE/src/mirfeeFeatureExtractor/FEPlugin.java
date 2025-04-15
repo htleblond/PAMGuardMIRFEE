@@ -85,7 +85,7 @@ public class FEPlugin implements PamPluginInterface {
 
 	@Override
 	public int getMaxNumber() {
-		return 1;
+		return 0;
 	}
 
 	@Override

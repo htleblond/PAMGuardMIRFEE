@@ -47,7 +47,7 @@ public class FPControl extends PamControlledUnit implements PamSettings {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext, int width) {
+	public void simpleErrorDialog(String inptext, int width) {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 				makeHTML(inptext, width),
 			"MIRFEE Feature Plotter",

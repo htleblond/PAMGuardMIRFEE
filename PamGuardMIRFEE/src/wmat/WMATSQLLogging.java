@@ -506,7 +506,7 @@ public class WMATSQLLogging {
 	}
 	
 	public boolean isMySQL() {
-		return !getDBSystem().getDatabaseName().contains(".sqlite");
+		return !(getDBSystem().getDatabaseName().contains(".sqlite") || getDBSystem().getDatabaseName().contains(".db"));
 	}
 	
 	protected DBControl getDBControl() {

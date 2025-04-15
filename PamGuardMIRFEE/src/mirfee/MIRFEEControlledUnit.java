@@ -129,7 +129,7 @@ public abstract class MIRFEEControlledUnit extends PamControlledUnit {
 	/**
 	 * Streamlined error dialog.
 	 */
-	public void SimpleErrorDialog() {
+	public void simpleErrorDialog() {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 			"An error has occured.\nSee console for details.",
 			"MIRFEE Feature Extractor",
@@ -139,7 +139,7 @@ public abstract class MIRFEEControlledUnit extends PamControlledUnit {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 			inptext,
 			"MIRFEE Feature Extractor",
@@ -149,7 +149,7 @@ public abstract class MIRFEEControlledUnit extends PamControlledUnit {
 	/**
 	 * Streamlined error dialog with an editable message and length.
 	 */
-	public void SimpleErrorDialog(String inptext, int width) {
+	public void simpleErrorDialog(String inptext, int width) {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 				makeHTML(inptext, width),
 			this.getUnitName(),

@@ -709,7 +709,7 @@ public class LCSettingsDialog extends PamDialog {
 	 */
 	protected void trainSetButtonThreadAction(boolean testSet) {
 		if (inputSourcePanel.getSourceCount() == 0) {
-			lcControl.SimpleErrorDialog("No Feature Extractor module found. "
+			lcControl.simpleErrorDialog("No Feature Extractor module found. "
 					+ "One should be added before selecting the training set.", 300);
 			return;
 		}
@@ -774,12 +774,12 @@ public class LCSettingsDialog extends PamDialog {
 			for (int i = 0; i < inp.size(); i++) {
 				//System.out.println(inp.get(i)+" -> "+vectorDataBlock.getFeatureList()[i][1]);
 				if (!inp.get(i).equals(vectorDataBlock.getFeatureList()[i][1])) {
-					lcControl.SimpleErrorDialog(failureMessage, 350);
+					lcControl.simpleErrorDialog(failureMessage, 350);
 					return false;
 				}
 			}
 		} else {
-			lcControl.SimpleErrorDialog(failureMessage, 350);
+			lcControl.simpleErrorDialog(failureMessage, 350);
 			return false;
 		}
 		return true;
@@ -817,7 +817,7 @@ public class LCSettingsDialog extends PamDialog {
 	 */
 	protected LCTrainingSetInfo readTrainingSet(boolean testSet, boolean showLoadingDialogs) {
 		if (testSet && loadedTrainingSet == null) {
-			lcControl.SimpleErrorDialog("Training set must be selected first.", 250);
+			lcControl.simpleErrorDialog("Training set must be selected first.", 250);
 			return null;
 		}
 		PamFileChooser fc = new PamFileChooser();
@@ -849,7 +849,7 @@ public class LCSettingsDialog extends PamDialog {
 			wdThread.start();
 		}
 		if (!f.exists()) {
-			lcControl.SimpleErrorDialog("Selected file does not exist.", 250);
+			lcControl.simpleErrorDialog("Selected file does not exist.", 250);
 			return null;
 		}
 		LCTrainingSetInfo outp = new LCTrainingSetInfo(f.getPath());
@@ -858,7 +858,7 @@ public class LCSettingsDialog extends PamDialog {
 			sc = new Scanner(f);
 			if (!sc.hasNextLine()) {
 				sc.close();
-				lcControl.SimpleErrorDialog("Selected set is a blank file.", 250);
+				lcControl.simpleErrorDialog("Selected set is a blank file.", 250);
 				return null;
 			}
 			String nextLine = sc.nextLine();
@@ -881,7 +881,7 @@ public class LCSettingsDialog extends PamDialog {
 				while (true) {
 					if (!sc.hasNextLine()) {
 						sc.close();
-						lcControl.SimpleErrorDialog("Selected set is not properly formatted.", 250);
+						lcControl.simpleErrorDialog("Selected set is not properly formatted.", 250);
 						return null;
 					}
 					nextLine = sc.nextLine();
@@ -893,7 +893,7 @@ public class LCSettingsDialog extends PamDialog {
 				nextLine = sc.nextLine();
 				if (!nextLine.startsWith("cluster,uid,location,date,duration,lf,hf,label,")) {
 					sc.close();
-					lcControl.SimpleErrorDialog("Selected set is not properly formatted.", 250);
+					lcControl.simpleErrorDialog("Selected set is not properly formatted.", 250);
 					return null;
 				}
 				if (!compareFEParams(paramsMap, testSet)) {
@@ -903,7 +903,7 @@ public class LCSettingsDialog extends PamDialog {
 				outp.feParamsMap = paramsMap;
 			} else {
 				sc.close();
-				lcControl.SimpleErrorDialog("Selected set is not properly formatted.", 250);
+				lcControl.simpleErrorDialog("Selected set is not properly formatted.", 250);
 				return null;
 			}
 			String[] firstSplit = nextLine.split(",");
@@ -939,18 +939,18 @@ public class LCSettingsDialog extends PamDialog {
 			}
 			sc.close();
 			if (dataLines.size() == 0) {
-				lcControl.SimpleErrorDialog("Selected set does not contain any valid data.", 250);;
+				lcControl.simpleErrorDialog("Selected set does not contain any valid data.", 250);;
 				return null;
 			}
 			if (!(outp.labelCounts.size() > 1 || (testSet && outp.labelCounts.size() > 0))) {
-				lcControl.SimpleErrorDialog("Selected training set must include at least two classes.", 250);
+				lcControl.simpleErrorDialog("Selected training set must include at least two classes.", 250);
 				sc.close();
 				return null;
 			}
 			for (int i = 8; i < firstSplit.length; i++) outp.featureList.add(firstSplit[i]);
 		} catch (Exception e2) {
 			e2.printStackTrace();
-			lcControl.SimpleErrorDialog("Scanning error encountered when attempting to load set.", 250);
+			lcControl.simpleErrorDialog("Scanning error encountered when attempting to load set.", 250);
 			return null;
 		}
 		return outp;
@@ -1184,7 +1184,7 @@ public class LCSettingsDialog extends PamDialog {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(null,
 			inptext,
 			"",
@@ -1196,7 +1196,7 @@ public class LCSettingsDialog extends PamDialog {
 	 */
 	protected boolean checkIfSettingsAreValid() {
 		if (loadedTrainingSet == null || loadedTrainingSet.pathName.length() == 0) {
-			lcControl.SimpleErrorDialog("No training set has been loaded.", 250);
+			lcControl.simpleErrorDialog("No training set has been loaded.", 250);
 			return false;
 		}
 		if (kBestCheck.isSelected()) {
@@ -1205,7 +1205,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Number of features for k-best feature selection must be at least 2.", 250);
+				lcControl.simpleErrorDialog("Number of features for k-best feature selection must be at least 2.", 250);
 				return false;
 			}
 		}
@@ -1215,7 +1215,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Maximum number of samples per class must be a positive integer.", 250);
+				lcControl.simpleErrorDialog("Maximum number of samples per class must be a positive integer.", 250);
 				return false;
 			}
 		}
@@ -1225,7 +1225,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Maximum number of samples per cluster must be a positive integer.", 250);
+				lcControl.simpleErrorDialog("Maximum number of samples per cluster must be a positive integer.", 250);
 				return false;
 			}
 		}
@@ -1235,7 +1235,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Number of estimators must at least be 1.", 250);
+				lcControl.simpleErrorDialog("Number of estimators must at least be 1.", 250);
 				return false;
 			}
 			if (rfMaxDepthCheck.isSelected()) {
@@ -1244,7 +1244,7 @@ public class LCSettingsDialog extends PamDialog {
 						throw new Exception();
 					}
 				} catch (Exception e) {
-					lcControl.SimpleErrorDialog("Maximum tree depth must at least be 2.", 250);
+					lcControl.simpleErrorDialog("Maximum tree depth must at least be 2.", 250);
 					return false;
 				}
 			}
@@ -1254,7 +1254,7 @@ public class LCSettingsDialog extends PamDialog {
 						throw new Exception();
 					}
 				} catch (Exception e) {
-					lcControl.SimpleErrorDialog("Maximum number of features per tree must at least be 2.", 250);
+					lcControl.simpleErrorDialog("Maximum number of features per tree must at least be 2.", 250);
 					return false;
 				}
 			}
@@ -1268,10 +1268,10 @@ public class LCSettingsDialog extends PamDialog {
 						throw new Exception();
 					}
 				} catch (NumberFormatException e) {
-					lcControl.SimpleErrorDialog("Class weights must all be valid numbers with or without a decimal point and separated by commas.", 250);
+					lcControl.simpleErrorDialog("Class weights must all be valid numbers with or without a decimal point and separated by commas.", 250);
 					return false;
 				} catch (Exception e) {
-					lcControl.SimpleErrorDialog("Number of class weights must match the number of classes in selected training set.", 250);
+					lcControl.simpleErrorDialog("Number of class weights must match the number of classes in selected training set.", 250);
 					return false;
 				}
 			}
@@ -1281,7 +1281,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Learning rate must be greater than 0 and less than or equal to 1.", 250);
+				lcControl.simpleErrorDialog("Learning rate must be greater than 0 and less than or equal to 1.", 250);
 				return false;
 			}
 			try {
@@ -1289,7 +1289,7 @@ public class LCSettingsDialog extends PamDialog {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				lcControl.SimpleErrorDialog("Maximum number of iterations must at least be 1.", 250);
+				lcControl.simpleErrorDialog("Maximum number of iterations must at least be 1.", 250);
 				return false;
 			}
 			if (hgbMaxDepthCheck.isSelected()) {
@@ -1298,7 +1298,7 @@ public class LCSettingsDialog extends PamDialog {
 						throw new Exception();
 					}
 				} catch (Exception e) {
-					lcControl.SimpleErrorDialog("Maximum tree depth must at least be 2.", 250);
+					lcControl.simpleErrorDialog("Maximum tree depth must at least be 2.", 250);
 					return false;
 				}
 			}
@@ -1493,7 +1493,7 @@ public class LCSettingsDialog extends PamDialog {
         if (!lcControl.isTrainingSetLoaded()) {
         	lcControl.getThreadManager().addCommand("modelManager.clearModelList()");
         	wdThread.halt();
-        	lcControl.SimpleErrorDialog("Training model initialization failed. See console for details.", 250);
+        	lcControl.simpleErrorDialog("Training model initialization failed. See console for details.", 250);
         	//lcControl.getParams().trainPath = "";
         	lcControl.getParams().setTrainingSetInfo(new LCTrainingSetInfo(""));
     		return false;

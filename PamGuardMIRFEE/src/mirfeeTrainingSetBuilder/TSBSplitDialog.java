@@ -344,7 +344,7 @@ public class TSBSplitDialog extends PamDialog {
 				df.setTimeZone(TimeZone.getTimeZone("UTC"));
 				df.parse(newDate);
 			} catch (Exception e1) {
-				tsbControl.SimpleErrorDialog("Invalid date/time entered.", 250);
+				tsbControl.simpleErrorDialog("Invalid date/time entered.", 250);
 				return;
 			}
 			int halfwayIndex = currDetectionList.size();
@@ -425,13 +425,13 @@ public class TSBSplitDialog extends PamDialog {
 	@Override
 	public boolean getParams() {
 		if (oldTotalField.getText().equals("0") || newTotalField.getText().equals("0")) {
-			tsbControl.SimpleErrorDialog("New or old subset would have no entries in it if split at the currently specified data/time.", 250);
+			tsbControl.simpleErrorDialog("New or old subset would have no entries in it if split at the currently specified data/time.", 250);
 			return false;
 		}
 		String newID = (String) newIDDigit1Box.getSelectedItem() + (String) newIDDigit2Box.getSelectedItem();
 		for (int i = 0; i < tsbControl.getSubsetList().size(); i++) {
 			if (tsbControl.getSubsetList().get(i).id.equals(newID)) {
-				tsbControl.SimpleErrorDialog("Chosen ID for new subset already taken.", 250);
+				tsbControl.simpleErrorDialog("Chosen ID for new subset already taken.", 250);
 				return false;
 			}
 		}

@@ -291,7 +291,7 @@ public class FPPanel extends PamBorderPanel {
 			}
 			File f = fc.getSelectedFile();
 			if (!f.exists()) {
-				fpControl.SimpleErrorDialog("Selected file does not exist.", 250);
+				fpControl.simpleErrorDialog("Selected file does not exist.", 250);
 				return;
 			}
 			
@@ -303,13 +303,13 @@ public class FPPanel extends PamBorderPanel {
 					firstLine = sc.nextLine().split(",");
 				}
 				if (firstLine.length < 7) {
-					fpControl.SimpleErrorDialog("Selected file not valid MIRFEE training set.", 250);
+					fpControl.simpleErrorDialog("Selected file not valid MIRFEE training set.", 250);
 					sc.close();
 					return;
 				}
 				if (!(firstLine[0].equals("cluster") && firstLine[1].equals("uid") && firstLine[2].equals("location")
 						 && firstLine[3].equals("date") && firstLine[4].equals("label"))) {
-					fpControl.SimpleErrorDialog("Selected file not valid MIRFEE training set.", 250);
+					fpControl.simpleErrorDialog("Selected file not valid MIRFEE training set.", 250);
 					sc.close();
 					return;
 				}
@@ -319,7 +319,7 @@ public class FPPanel extends PamBorderPanel {
 					//System.out.println(firstLine[i]);
 				}
 				if (newFeatureList.size() < 2) {
-					fpControl.SimpleErrorDialog("Selected file contains fewer than two features.", 250);
+					fpControl.simpleErrorDialog("Selected file contains fewer than two features.", 250);
 					sc.close();
 					return;
 				}
@@ -333,7 +333,7 @@ public class FPPanel extends PamBorderPanel {
 					}
 				}
 				if (newEntryList.size() == 0) {
-					fpControl.SimpleErrorDialog("Selected file contains no entries.", 250);
+					fpControl.simpleErrorDialog("Selected file contains no entries.", 250);
 					sc.close();
 					return;
 				}
@@ -346,9 +346,9 @@ public class FPPanel extends PamBorderPanel {
 				if (sc != null) {
 					sc.close();
 					e2.printStackTrace();
-					fpControl.SimpleErrorDialog("Error processing selected file.", 250);
+					fpControl.simpleErrorDialog("Error processing selected file.", 250);
 				} else {
-					fpControl.SimpleErrorDialog("Could not create scanner.", 250);
+					fpControl.simpleErrorDialog("Could not create scanner.", 250);
 				}
 				return;
 			}

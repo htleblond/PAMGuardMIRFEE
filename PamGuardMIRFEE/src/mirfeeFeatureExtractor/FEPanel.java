@@ -194,7 +194,7 @@ public class FEPanel {
 	/**
 	 * Streamlined error dialog.
 	 */
-	public void SimpleErrorDialog() {
+	public void simpleErrorDialog() {
 		JOptionPane.showMessageDialog(null,
 			"An error has occured.\nSee console for details.",
 			"",
@@ -204,7 +204,7 @@ public class FEPanel {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(null,
 			inptext,
 			"",

@@ -88,6 +88,7 @@ public class FESettingsDialog extends PamDialog {
 	protected JComboBox<String> outputDataBox;
 	protected JTextField outputDataField;
 	protected JButton outputDataButton;
+	protected JButton outputImportSettingsButton;
 	
 	protected SourcePanel audioSourcePanel;
 	protected ButtonGroup dynamicOrStatic;
@@ -239,7 +240,7 @@ public class FESettingsDialog extends PamDialog {
 		inputDataPanel.add(inputIgnore2SecondGlitchCheck, c);
 		c.gridy++;
 		inputIgnoreFalsePositivesCheck = new JCheckBox();
-		inputIgnoreFalsePositivesCheck.setText("Ignore entries with 'False Positive' label");
+		inputIgnoreFalsePositivesCheck.setText("Ignore entries with 'False positive' or 'False Detection' label");
 		inputDataPanel.add(inputIgnoreFalsePositivesCheck, c);
 		c.gridy++;
 		inputIgnoreUnkCheck = new JCheckBox();
@@ -266,7 +267,7 @@ public class FESettingsDialog extends PamDialog {
 		c = new PamGridBagContraints();
 		c.gridy = 0;
 		c.gridx = 0;
-		c.gridwidth = 4;
+		c.gridwidth = 2;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		//outputDataCheck = new JCheckBox();
 		//outputDataCheck.setText("Output feature data to .mfe file");
@@ -276,15 +277,20 @@ public class FESettingsDialog extends PamDialog {
 		outputDataBox.addActionListener(new outputDataBoxListener());
 		outputDataPanel.add(outputDataBox, c);
 		c.gridy++;
-		c.gridwidth = 3;
+		c.gridwidth = 1;
 		outputDataField = new JTextField(20);
 		outputDataField.setEnabled(false);
 		outputDataPanel.add(outputDataField, c);
-		c.gridx = 3;
-		c.gridwidth = 1;
-		outputDataButton = new JButton("Select file");
+		c.gridx++;
+		outputDataButton = new JButton("Select or create file");
 		outputDataButton.addActionListener(new CSVListener(this, true));
 		outputDataPanel.add(outputDataButton, c);
+		c.gridy++;
+		c.gridx = 0;
+		c.gridwidth = 2;
+		outputImportSettingsButton = new JButton("Import settings and features from output file");
+		outputImportSettingsButton.addActionListener(new ImportSettingsListener());
+		outputDataPanel.add(outputImportSettingsButton, c);
 		outputFP1.add(outputDataPanel);
 		mainPanel2.add(outputFP1, b);
 		
@@ -603,15 +609,15 @@ public class FESettingsDialog extends PamDialog {
 		c.gridx = 0;
 		c.gridwidth = 4;
 		featureImportInputButton = new JButton("Import features from selected input file (if .mtsf)");
-		featureImportInputButton.addActionListener(new ImportCSVFeaturesButtonListener(ImportCSVFeaturesButtonListener.FROM_INPUT));
+		featureImportInputButton.addActionListener(new ImportFeaturesButtonListener(ImportFeaturesButtonListener.FROM_INPUT));
 		featureTablePanel.add(featureImportInputButton, c);
 		c.gridy++;
 		featureImportOutputButton = new JButton("Import features from selected output file");
-		featureImportOutputButton.addActionListener(new ImportCSVFeaturesButtonListener(ImportCSVFeaturesButtonListener.FROM_OUTPUT));
+		featureImportOutputButton.addActionListener(new ImportFeaturesButtonListener(ImportFeaturesButtonListener.FROM_OUTPUT));
 		featureTablePanel.add(featureImportOutputButton, c);
 		c.gridy++;
 		featureImportSelectedButton = new JButton("Import features from other .mfe file or .mtsf file");
-		featureImportSelectedButton.addActionListener(new ImportCSVFeaturesButtonListener(ImportCSVFeaturesButtonListener.FROM_SELECTED));
+		featureImportSelectedButton.addActionListener(new ImportFeaturesButtonListener(ImportFeaturesButtonListener.FROM_SELECTED));
 		featureTablePanel.add(featureImportSelectedButton, c);
 		featureFP1.add(featureTablePanel);
 		mainPanel4.add(featureFP1, b);
@@ -959,7 +965,7 @@ public class FESettingsDialog extends PamDialog {
 					for (int i = 0; i < fs.length; i++) {
 						File f = fs[i];
 						if (!f.exists()) {
-							feControl.SimpleErrorDialog("Selected file does not exist.");
+							feControl.simpleErrorDialog("Selected file does not exist.");
 							return;
 						}
 						Scanner sc;
@@ -967,7 +973,7 @@ public class FESettingsDialog extends PamDialog {
 							sc = new Scanner(f);
 							if (!sc.hasNextLine()) {
 								sc.close();
-								feControl.SimpleErrorDialog("Selected file is blank.");
+								feControl.simpleErrorDialog("Selected file is blank.");
 								return;
 							}
 							String firstLine = sc.nextLine();
@@ -977,7 +983,7 @@ public class FESettingsDialog extends PamDialog {
 									//inputDataField.setText(f.getPath());
 									placeholderList.add(f);
 								} else {
-									//feControl.SimpleErrorDialog("Header in selected .wmat file is not formatted correctly.");
+									//feControl.simpleErrorDialog("Header in selected .wmat file is not formatted correctly.");
 									System.out.println("Error: Header in "+f.getName()+" is not formatted correctly.");
 									continue;
 								}
@@ -993,13 +999,13 @@ public class FESettingsDialog extends PamDialog {
 							}
 						} catch (Exception e2) {
 							e2.printStackTrace();
-							//feControl.SimpleErrorDialog("Could not parse selected file.");
+							//feControl.simpleErrorDialog("Could not parse selected file.");
 							//return;
 							System.out.println("Error: "+f.getName()+" could not be parsed.");
 						}
 					}
 					if (placeholderList.size() == 0) {
-						feControl.SimpleErrorDialog("No valid .wmat or .mtsf files were selected.");
+						feControl.simpleErrorDialog("No valid .wmat or .mtsf files were selected.");
 						return;
 					} else if (placeholderList.size() < fs.length) {
 						String message = String.valueOf(fs.length - placeholderList.size())+" selected file(s) were invalid (see console).\n\n"
@@ -1048,6 +1054,157 @@ public class FESettingsDialog extends PamDialog {
 		String outp = "<html><p style=\"width:"+Integer.toString(width)+"px\">"+inp+"</p></html>";
 		return outp;
 	} */
+	
+	protected class ImportSettingsListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int invalidSettings = importSettings(findSettingsInOutputFile());
+			if (invalidSettings == -1) {
+				feControl.simpleErrorDialog("No valid settings were found in the file.", invalidSettings);
+				return;
+			} else if (invalidSettings == 0) {
+				JOptionPane.showMessageDialog(feControl.getGuiFrame(),
+						"Settings successfully imported from selected output file.\nThe feature vector will now be imported.",
+						feControl.getUnitName(),
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(feControl.getGuiFrame(),
+						"File contained "+String.valueOf(invalidSettings)+" invalid settings, but some were successfully imported.\nThe feature vector will now be imported.",
+						feControl.getUnitName(),
+						JOptionPane.WARNING_MESSAGE);
+			}
+			importFeatures(ImportFeaturesButtonListener.FROM_OUTPUT);
+		}	
+	}
+	
+	protected HashMap<String, String> findSettingsInOutputFile() {
+		if (outputDataField.getText().equals("") || outputDataField.getText().equals("No file selected.")) {
+			feControl.simpleErrorDialog("The output file needs to be selected or created first.", 250);
+			return null;
+		}
+		File f = new File(outputDataField.getText());
+		if (!f.exists()) {
+			feControl.simpleErrorDialog("No settings were found in the selected output file.", 250);
+			return null;
+		}
+		HashMap<String, String> foundSettings = new HashMap<String, String>();
+		boolean foundStart = false;
+		Scanner sc = null;
+		try {
+			sc = new Scanner(f);
+			while(sc.hasNextLine())	{
+				String nextLine = sc.nextLine();
+				if (!foundStart) {
+					if (nextLine.equals("EXTRACTOR PARAMS START"))
+						foundStart = true;
+					continue;
+				}
+				if (nextLine.equals("EXTRACTOR PARAMS END")) 
+					break;
+				String[] split = nextLine.split("=");
+				if (split.length >= 2)
+					foundSettings.put(split[0], split[1]);
+			}
+			sc.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (sc != null)
+				sc.close();
+		}
+		return foundSettings;
+	}
+	
+	protected int importSettings(HashMap<String, String> foundSettings) {
+		if (foundSettings.size() == 0)
+			return -1;
+		int invalidSettings = 0;
+		Iterator<String> it = foundSettings.keySet().iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			String value = foundSettings.get(key);
+			try {
+				if (key.equals("sr")) {
+					// ????
+				} else if (key.equals("audioAutoClipLength")) {
+					if (Boolean.valueOf(value).booleanValue()) {
+						dynamicRB.setSelected(true);
+						switchOn(dynamicRB, true);
+					} else {
+						staticRB.setSelected(true);
+						switchOn(staticRB, true);
+					}
+				} else if (key.equals("audioClipLength")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioLengthField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioSTFTLength")) {
+					ArrayList<String> stftValues = new ArrayList<String>();
+					for (int i = 0; i < audioSTFTBox.getItemCount(); i++)
+						stftValues.add(audioSTFTBox.getItemAt(i));
+					if (stftValues.contains(value))
+						this.audioSTFTBox.setSelectedItem(value);
+					else throw new Exception();
+				} else if (key.equals("audioHopSize")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioHopField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioWindowFunction")) {
+					ArrayList<String> windowValues = new ArrayList<String>();
+					for (int i = 0; i < audioWindowBox.getItemCount(); i++)
+						windowValues.add(audioWindowBox.getItemAt(i));
+					if (windowValues.contains(value))
+						this.audioWindowBox.setSelectedItem(value);
+					else throw new Exception();
+				} else if (key.equals("audioNormalizeChecked")) {
+					audioNormalizeCheck.setSelected(Boolean.valueOf(value).booleanValue());
+					switchOn(audioNormalizeCheck, Boolean.valueOf(value).booleanValue());
+				} else if (key.equals("audioHPFChecked")) {
+					audioHPFCheck.setSelected(Boolean.valueOf(value).booleanValue());
+					switchOn(audioHPFCheck, Boolean.valueOf(value).booleanValue());
+				} else if (key.equals("audioHPFThreshold")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioHPFThresholdField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioHPFMagnitude")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioHPFMagnitudeField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioLPFChecked")) {
+					audioLPFCheck.setSelected(Boolean.valueOf(value).booleanValue());
+					switchOn(audioLPFCheck, Boolean.valueOf(value).booleanValue());
+				} else if (key.equals("audioLPFThreshold")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioLPFThresholdField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioLPFMagnitude")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioLPFMagnitudeField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioNRChecked")) {
+					audioNRCheck.setSelected(Boolean.valueOf(value).booleanValue());
+					switchOn(audioNRCheck, Boolean.valueOf(value).booleanValue());
+				} else if (key.equals("audioNRStart")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioNRStartField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioNRLength")) {
+					if (Integer.valueOf(value) > 0)
+						this.audioNRLengthField.setText(value);
+					else throw new Exception();
+				} else if (key.equals("audioNRScalar")) {
+					if (Double.valueOf(value) > 0)
+						this.audioNRScalarField.setText(value);
+					else throw new Exception();
+				} else throw new Exception();
+			} catch (Exception e) {
+				invalidSettings++;
+				System.out.println(key+" -> "+value);
+			}
+		}
+		if (invalidSettings == foundSettings.size())
+			invalidSettings = -1;
+		return invalidSettings;
+	}
 	
 	/**
 	 * ActionListener for checkboxes.
@@ -1151,51 +1308,56 @@ public class FESettingsDialog extends PamDialog {
 	/**
 	 * ActionListener for the "import" buttons in the "Features" tab.
 	 */
-	public class ImportCSVFeaturesButtonListener implements ActionListener{
+	public class ImportFeaturesButtonListener implements ActionListener{
 		public static final int FROM_INPUT = 0;
 		public static final int FROM_OUTPUT = 1;
 		public static final int FROM_SELECTED = 2;
 		
 		protected int importMode;
 		
-		public ImportCSVFeaturesButtonListener(int importMode) {
+		public ImportFeaturesButtonListener(int importMode) {
 			this.importMode = importMode;
 		}
 		
 		public void actionPerformed(ActionEvent e) {
-			File f;
-			if (importMode == FROM_INPUT) {
-				if (!(inputDataField.getText().endsWith(".mirrfts") || inputDataField.getText().endsWith(".mtsf"))) {
-					feControl.SimpleErrorDialog("Input file must be .mtsf.");
-					return;
-				}
-				f = new File(inputDataField.getText());
-			} else if (importMode == FROM_OUTPUT) {
-				if (outputDataField.getText().length() == 0) {
-					feControl.SimpleErrorDialog("No output file has been selected.");
-					return;
-				}
-				f = new File(outputDataField.getText());
-			} else { // importMode == FROM_SELECTED
-				PamFileChooser fc = new PamFileChooser();
-				fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				fc.setMultiSelectionEnabled(false);
-				fc.addChoosableFileFilter(new FileNameExtensionFilter("MIRFEE unlabelled feature vectors (*.mfe)","mfe","mirrffe"));
-				fc.addChoosableFileFilter(new FileNameExtensionFilter("MIRFEE training set file (*.mtsf)","mtsf","mirrfts"));
-				//fc.addChoosableFileFilter(new FileNameExtensionFilter("Comma-separated values file (*.csv)","csv"));
-				int returnVal = fc.showOpenDialog(parentFrame);
-				if (returnVal == JFileChooser.CANCEL_OPTION) {
-					return;
-				}
-				f = fc.getSelectedFile();
-			}
-			ArrayList<String> features = feControl.findFeaturesInFile(f);
-			if (features == null || features.size() == 0) {
-				feControl.SimpleErrorDialog("No features were found in the selected file.");
-				return;
-			}
-			addFeaturesToTable(features);
+			importFeatures(importMode);
 		}
+	}
+	
+	protected boolean importFeatures(int importMode) {
+		File f;
+		if (importMode == ImportFeaturesButtonListener.FROM_INPUT) {
+			if (!(inputDataField.getText().endsWith(".mirrfts") || inputDataField.getText().endsWith(".mtsf"))) {
+				feControl.simpleErrorDialog("Input file must be .mtsf.");
+				return false;
+			}
+			f = new File(inputDataField.getText());
+		} else if (importMode == ImportFeaturesButtonListener.FROM_OUTPUT) {
+			if (outputDataField.getText().length() == 0 || outputDataField.getText().equals("No file selected.")) {
+				feControl.simpleErrorDialog("No output file has been selected.");
+				return false;
+			}
+			f = new File(outputDataField.getText());
+		} else { // importMode == FROM_SELECTED
+			PamFileChooser fc = new PamFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("MIRFEE unlabelled feature vectors (*.mfe)","mfe","mirrffe"));
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("MIRFEE training set file (*.mtsf)","mtsf","mirrfts"));
+			//fc.addChoosableFileFilter(new FileNameExtensionFilter("Comma-separated values file (*.csv)","csv"));
+			int returnVal = fc.showOpenDialog(parentFrame);
+			if (returnVal == JFileChooser.CANCEL_OPTION) {
+				return false;
+			}
+			f = fc.getSelectedFile();
+		}
+		ArrayList<String> features = feControl.findFeaturesInFile(f);
+		if (features == null || features.size() == 0) {
+			feControl.simpleErrorDialog("No features were found in the selected file.");
+			return false;
+		}
+		addFeaturesToTable(features);
+		return true;
 	}
 	
 	/**
@@ -1322,7 +1484,7 @@ public class FESettingsDialog extends PamDialog {
 							double max_exp_freq = Double.valueOf(tokens[1]);
 							double min_freq = Double.valueOf(tokens[2]);
 							double max_bandwidth = Double.valueOf(tokens[3]);
-							if (max_exp_freq >= 10 && calcs.contains(tokens[4])) {
+							if (max_exp_freq >= 10 && (calcs.contains(tokens[4])  || tokens[4].equals("fullclip"))) {
 								validFeatures.add(inp.get(i));
 								continue;
 							}
@@ -1352,7 +1514,7 @@ public class FESettingsDialog extends PamDialog {
 							double min_freq = Double.valueOf(tokens[2]);
 							double max_bandwidth = Double.valueOf(tokens[3]);
 							int formant_num = Integer.valueOf(tokens[4]);
-							if (max_exp_freq >= 10 && formant_num > 0 && calcs.contains(tokens[5])) {
+							if (max_exp_freq >= 10 && formant_num > 0 && (calcs.contains(tokens[5]) || tokens[5].equals("fullclip"))) {
 								validFeatures.add(inp.get(i));
 								continue;
 							}
@@ -1398,7 +1560,7 @@ public class FESettingsDialog extends PamDialog {
 		}
 		if (invalidFeatures.size() > 0) {
 			if (validFeatures.size() == 0) {
-				feControl.SimpleErrorDialog("Selected file does not contain any valid feature names.");
+				feControl.simpleErrorDialog("Selected file does not contain any valid feature names.");
 				return false;
 			}
 			String message = "The following features found in the selected file are not valid:\n\n";
@@ -1510,7 +1672,7 @@ public class FESettingsDialog extends PamDialog {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(null,
 			inptext,
 			"",
@@ -1522,7 +1684,7 @@ public class FESettingsDialog extends PamDialog {
 	 */
 	public boolean actuallyGetParams() {
 		FEParameters params = feControl.getParams();
-		if (params.inputFromCSV) {
+		if (params.inputFromWMATorMTSF) {
 			inputRBG.setSelected(inputDataRB.getModel(), true);
 			switchOn(inputDataRB, true);
 		} else {
@@ -1535,8 +1697,10 @@ public class FESettingsDialog extends PamDialog {
 				inputSourcePanel.setSourceIndex(0);
 			}
 		}
-		if (params.inputDataFiles.size() > 0) {
-			inputDataList = new ArrayList<File>(params.inputDataFiles);
+		if (params.inputWMATFileNames.size() > 0) {
+			inputDataList = new ArrayList<File>();
+			for (int i = 0; i < params.inputWMATFileNames.size(); i++)
+				inputDataList.add(new File(params.inputWMATFileNames.get(i)));
 			if (params.inputFilesAreMTSF()) {
 				inputDataField.setText(String.valueOf(inputDataList.size())+" .mtsf file(s) selected.");
 			} else {
@@ -1701,25 +1865,29 @@ public class FESettingsDialog extends PamDialog {
 	}
 	
 	protected boolean clearFileAndAddSettingsInfo(FEParameters newParams) {
+		if (outputDataField.getText().equals("") || outputDataField.getText().equals("No file selected.")) {
+			feControl.simpleErrorDialog("The output file needs to be selected or created first.", 250);
+			return false;
+		}
 		File f = new File(outputDataField.getText());
 		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
-				feControl.SimpleErrorDialog("Could not create output file.", 250);
+				feControl.simpleErrorDialog("Could not create output file.", 250);
 				return false;
 			}
 		}
 		if (!f.delete()) {
-			feControl.SimpleErrorDialog("Could not clear output file.", 250);
+			feControl.simpleErrorDialog("Could not clear output file.", 250);
 			return false;
 		}
 		try {
 			f.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-			feControl.SimpleErrorDialog("Could not create output file.", 250);
+			feControl.simpleErrorDialog("Could not create output file.", 250);
 			return false;
 		}
 		PrintWriter pw;
@@ -1749,7 +1917,7 @@ public class FESettingsDialog extends PamDialog {
 			pw.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			feControl.SimpleErrorDialog("Error while writing settings info to file.", 250);
+			feControl.simpleErrorDialog("Error while writing settings info to file.", 250);
 			return false;
 		}
 		return true;
@@ -1764,320 +1932,52 @@ public class FESettingsDialog extends PamDialog {
 	public boolean getParams() {
 		//if (feControl.isViewer()) return true;
 		if (inputProcessRB.isSelected() && inputSourcePanel.getSourceCount() == 0) {
-			SimpleErrorDialog("No Whistle and Moan Detector module found in current configuration.\n"
+			simpleErrorDialog("No Whistle and Moan Detector module found in current configuration.\n"
 					+ "You should either set one up or import contour data from a .wmat file.");
 			return false;
 		} else if (inputDataRB.isSelected() && inputDataField.getText() == "No file selected.") {
-			SimpleErrorDialog("No .wmat file has been selected as input.");
+			simpleErrorDialog("No .wmat file has been selected as input.");
 			return false;
 		} else if (inputDataRB.isSelected() && inputDataFileSizeField.getText().length() == 0) {
-			SimpleErrorDialog("Expected audio file size must be an integer.");
+			simpleErrorDialog("Expected audio file size must be an integer.");
 			return false;
 		} else if (outputDataBox.getSelectedIndex() > 0 && outputDataField.getText() == "No file selected.") {
-			SimpleErrorDialog("No .wmat file has been selected for output.");
+			simpleErrorDialog("No .wmat file has been selected for output.");
 			return false;
 		} else if (outputDataBox.getSelectedIndex() == 2 && 
 				!(inputDataRB.isSelected() && inputDataList.size() > 0 && 
 						(inputDataList.get(0).getAbsolutePath().endsWith(".mirrfts") || inputDataList.get(0).getAbsolutePath().endsWith(".mtsf")))) {
-			SimpleErrorDialog("Output .mtsf files must take input data from a pre-existing .mtsf file.");
+			simpleErrorDialog("Output .mtsf files must take input data from a pre-existing .mtsf file.");
 			return false;
 		} else if (outputDataBox.getSelectedIndex() == 1 &&
 				(inputDataRB.isSelected() && inputDataList.size() > 0 && 
 						(inputDataList.get(0).getAbsolutePath().endsWith(".mirrfts") || inputDataList.get(0).getAbsolutePath().endsWith(".mtsf")))) {
-			SimpleErrorDialog("Input .mtsf files can only output to other .mtsf files and vice-versa.");
+			simpleErrorDialog("Input .mtsf files can only output to other .mtsf files and vice-versa.");
 			return false;
 		} else if (inputDataField.getText().equals(outputDataField.getText())) {
-			SimpleErrorDialog("Input and output files cannot be the same.");
+			simpleErrorDialog("Input and output files cannot be the same.");
 			return false;
 		} else if (audioSourcePanel.getSourceCount() < 1) {
-			SimpleErrorDialog("No audio source found.\n"
+			simpleErrorDialog("No audio source found.\n"
 					+ "You should add a Sound Acquisition module to the configuration.");
 			return false;
 		} else if (audioHPFCheck.isSelected() && audioLPFCheck.isSelected() && 
 				Integer.valueOf(audioHPFThresholdField.getText()) >= Integer.valueOf(audioLPFThresholdField.getText())) {
-			SimpleErrorDialog("High pass filter threshold should be lower than that of the low pass filter,\n"
+			simpleErrorDialog("High pass filter threshold should be lower than that of the low pass filter,\n"
 					+ "if both are enabled.");
 			return false;
 		} else if (audioNRCheck.isSelected() && Integer.valueOf(audioNRStartField.getText()) < Integer.valueOf(audioNRLengthField.getText())) {
-			SimpleErrorDialog("Noise removal clip length must be shorter than or of equal length to\n"
+			simpleErrorDialog("Noise removal clip length must be shorter than or of equal length to\n"
 					+ "the start time.");
 			return false;
 		} else if (featureTableModel.getRowCount() == 0) {
-			SimpleErrorDialog("No features have been selected.");
+			simpleErrorDialog("No features have been selected.");
 			return false;
 		}
 		
 		FEParameters newParams = feControl.getParams().clone();
-		newParams.inputDataEntries.clear();
-		//newParams.inputDataIndexes.clear();
-		//FEParameters newParams = new FEParameters();
 		
-		newParams.inputFromCSV = inputDataRB.isSelected();
-		if (inputProcessRB.isSelected()) {
-			if (inputSourcePanel.getSourceIndex() > -1) {
-				newParams.inputProcessName = (String) inputSourcePanel.getSourceName();
-			} else {
-				newParams.inputProcessName = "";
-			}
-			//feControl.getSidePanel().getFEPanel().getReloadCSVButton().setEnabled(false);
-		} else if (inputDataRB.isSelected()) {
-			if (inputDataList.size() == 0) {
-				feControl.SimpleErrorDialog("No input files have been selected.", 250);
-				return false;
-			}
-			ArrayList<String[]> startsAndEnds = new ArrayList<String[]>();
-			for (int k = 0; k < inputDataList.size(); k++) {
-				try {
-					File f = inputDataList.get(k);
-					SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss+SSS");
-					df.setTimeZone(TimeZone.getTimeZone("UTC"));
-					if (!f.exists()) {
-						feControl.SimpleErrorDialog(f.getName()+" does not exist.");
-						return false;
-					}
-					Scanner sc;
-					if (f.getAbsolutePath().endsWith(".wmat") || f.getAbsolutePath().endsWith(".wmnt")) {
-						try {
-							sc = new Scanner(f);
-							if (!sc.hasNextLine()) {
-								sc.close();
-								feControl.SimpleErrorDialog(f.getName()+" is blank.", 250);
-								return false;
-							}
-							String firstLine = sc.nextLine();
-							if (!firstLine.startsWith("uid,datetime,lf,hf,duration,amplitude,species,calltype,comment,slicedata")) {
-								sc.close();
-								feControl.SimpleErrorDialog(f.getName()+" is not correctly formatted.", 250);
-								return false;
-							}
-							String start = "";
-							String end = "";
-							while (sc.hasNextLine()) {
-								String[] nextSplit = sc.nextLine().split(",");
-								try {
-									if ((inputIgnoreBlanksCheck.isSelected() && nextSplit[6].length() == 0)
-											|| (inputIgnore2SecondGlitchCheck.isSelected() && nextSplit[6].equals("2-second glitch"))
-											|| (inputIgnoreFalsePositivesCheck.isSelected() && nextSplit[6].equals("False positive"))
-											|| (inputIgnoreUnkCheck.isSelected() && 
-													(nextSplit[6].equals("Unk") || nextSplit[6].equals("Unknown")))) {
-										continue;
-									}
-									String datetime = nextSplit[1];
-									if (start.length() == 0 || start.compareTo(datetime) > 0) start = datetime;
-									if (end.length() == 0 || end.compareTo(datetime) < 0) end = datetime;
-									newParams.inputDataEntries.add(new FEInputDataObject(nextSplit, false, null, null));
-								} catch (Exception e) {
-									e.printStackTrace(); // TODO Remove if it becomes a problem.
-									continue;
-								}
-								//newParams.inputDataEntries.add(nextSplit);
-							}
-							startsAndEnds.add(new String[] {start, end});
-							sc.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-							feControl.SimpleErrorDialog("Error occured when attempting to read "+f.getName()+".", 350);
-							return false;
-						}
-					} else { // input file is .mtsf (current) or .mirrfts (old)
-						try {
-							sc = new Scanner(f);
-							if (!sc.hasNextLine()) {
-								sc.close();
-								feControl.SimpleErrorDialog(f.getName()+" is blank.", 250);
-								return false;
-							}
-							ArrayList<String> foundFeatures = feControl.findFeaturesInFile(f);
-							if (foundFeatures == null || foundFeatures.size() == 0) {
-								sc.close();
-								feControl.SimpleErrorDialog(f.getName()+" is not correctly formatted.", 250);
-								return false;
-							}
-							boolean foundHeader = false;
-							String header = "cluster,uid,location,date,duration,lf,hf,label";
-							for (int i = 0; i < foundFeatures.size(); i++)
-								header += ","+foundFeatures.get(i);
-							String start = "";
-							String end = "";
-						/*	while (sc.hasNextLine()) {
-								String next = sc.nextLine();
-								if (!foundHeader) {
-									if (next.equals(header)) foundHeader = true;
-									continue;
-								}
-								String[] nextSplit = next.split(",");
-								try {
-									if ((inputIgnoreBlanksCheck.isSelected() && nextSplit[7].length() == 0)
-											|| (inputIgnore2SecondGlitchCheck.isSelected() && nextSplit[7].equals("2-second glitch"))
-											|| (inputIgnoreFalsePositivesCheck.isSelected() && nextSplit[7].equals("False positive"))
-											|| (inputIgnoreUnkCheck.isSelected() && 
-													(nextSplit[7].equals("Unk") || nextSplit[7].equals("Unknown")))) {
-										continue;
-									}
-									ArrayList<String> problematicFeatures = feControl.findProblematicFeaturesInFile(f);
-									ArrayList<String> cantRetrieve = new ArrayList<String>();
-									for (int j = 0; j < featureTable.getRowCount(); j++) {
-										String value = (String) featureTable.getValueAt(j, 1);
-										String[] tokens = value.split("_");
-										if (tokens[0].equals("amplitude") || tokens[0].equals("freqsd") || tokens[0].equals("freqsdd1") ||
-												tokens[0].equals("freqsdd2") || tokens[0].equals("freqsdslope") || tokens[0].equals("freqsdelbow") ||
-												tokens[0].equals("wcfreqs") || tokens[0].equals("wcslopes") || tokens[0].equals("wccurves"))
-											if (!problematicFeatures.contains(value)) cantRetrieve.add(value);
-									}
-									if (cantRetrieve.size() > 0) {
-										String txt = "Since you're taking input from a .mirrfts file, the following header features can't be retrieved, "
-												+ "as amplitude and slice data are not normally stored in .mirrfts files and the selected features weren't "
-												+ "found in the input file to copy over:\n";
-										for (int j = 0; j < cantRetrieve.size(); j++)
-											txt += "\n"+cantRetrieve.get(j);
-										feControl.SimpleErrorDialog(txt, 350);
-										return false;
-									}
-									String datetime = nextSplit[3];
-									if (start.length() == 0 || start.compareTo(datetime) > 0) start = datetime;
-									if (end.length() == 0 || end.compareTo(datetime) < 0) end = datetime;
-									newParams.inputDataEntries.add(new FEInputDataObject(nextSplit, true, foundFeatures, problematicFeatures));
-								} catch (Exception e) {
-									e.printStackTrace(); // TODO Remove if it becomes a problem.
-									continue;
-								}
-								//newParams.inputDataEntries.add(nextSplit);
-							} */
-							while (sc.hasNextLine()) {
-								if (sc.nextLine().equals(header)) break;
-							}
-							// I'm not sure why the problematic features bit was originally in a while-loop as shown above.
-							ArrayList<String> problematicFeatures = feControl.findProblematicFeaturesInFile(f);
-							ArrayList<String> cantRetrieve = new ArrayList<String>();
-							for (int j = 0; j < featureTable.getRowCount(); j++) {
-								String value = (String) featureTable.getValueAt(j, 1);
-								String[] tokens = value.split("_");
-								if (tokens[0].equals("amplitude") || tokens[0].equals("freqsd") || tokens[0].equals("freqsdd1") ||
-										tokens[0].equals("freqsdd2") || tokens[0].equals("freqsdslope") || tokens[0].equals("freqsdelbow") ||
-										tokens[0].equals("wcfreqs") || tokens[0].equals("wcslopes") || tokens[0].equals("wccurves"))
-									if (!problematicFeatures.contains(value)) cantRetrieve.add(value);
-							}
-							if (cantRetrieve.size() > 0) {
-								String txt = "Since you're taking input from a .mtsf file, the following header features can't be retrieved, "
-										+ "as amplitude and slice data are not normally stored in .mtsf files and the selected features weren't "
-										+ "found in the input file to copy over:\n";
-								for (int j = 0; j < cantRetrieve.size(); j++)
-									txt += "\n"+cantRetrieve.get(j);
-								feControl.SimpleErrorDialog(txt, 350);
-								return false;
-							}
-							//if (f.getAbsolutePath().endsWith(".mirrfts")) {
-							while (sc.hasNextLine()) {
-								String[] nextSplit =  sc.nextLine().split(",");
-								try {
-									if ((inputIgnoreBlanksCheck.isSelected() && nextSplit[7].length() == 0)
-											|| (inputIgnore2SecondGlitchCheck.isSelected() && nextSplit[7].equals("2-second glitch"))
-											|| (inputIgnoreFalsePositivesCheck.isSelected() && nextSplit[7].equals("False positive"))
-											|| (inputIgnoreUnkCheck.isSelected() && 
-													(nextSplit[7].equals("Unk") || nextSplit[7].equals("Unknown")))) {
-										continue;
-									}
-									String datetime = nextSplit[3];
-									if (start.length() == 0 || start.compareTo(datetime) > 0) start = datetime;
-									if (end.length() == 0 || end.compareTo(datetime) < 0) end = datetime;
-									newParams.inputDataEntries.add(new FEInputDataObject(nextSplit, true, foundFeatures, problematicFeatures));
-								} catch (Exception e) {
-									e.printStackTrace(); // TODO Remove if it becomes a problem.
-									continue;
-								}
-							}
-							// There was an attempt to re-format the training set files to binary, but I've abandoned that for now.
-						/*	} else {
-								// Kudos: https://stackoverflow.com/questions/3402735/what-is-simplest-way-to-read-a-file-into-string
-								String remainder = sc.useDelimiter("\\Z").next();
-								sc.close();
-								byte[] bytearr = remainder.getBytes();
-								ByteArrayInputStream bis = new ByteArrayInputStream(bytearr, 0, bytearr.length);
-								DataInputStream dis = new DataInputStream(bis);
-								while (true) {
-									try {
-										String[] inpdata = new String[8];
-										inpdata[0] = dis.readUTF(); // cluster ID
-										inpdata[1] = String.valueOf(dis.readLong()); // UID
-										inpdata[2] = dis.readUTF(); // location
-										inpdata[3] = String.valueOf(feControl.convertDateLongToString(dis.readLong())); // datetime
-										inpdata[4] = String.valueOf(dis.readInt()); // duration
-										inpdata[5] = String.valueOf(dis.readInt()); // lf
-										inpdata[6] = String.valueOf(dis.readInt()); // hf
-										inpdata[7] = dis.readUTF(); // label
-										for (int j = 0; j < foundFeatures.size(); j++)
-											dis.readDouble(); // features (not used here)
-										if ((inputIgnoreBlanksCheck.isSelected() && inpdata[7].length() == 0)
-												|| (inputIgnore2SecondGlitchCheck.isSelected() && inpdata[7].equals("2-second glitch"))
-												|| (inputIgnoreFalsePositivesCheck.isSelected() && inpdata[7].equals("False positive"))
-												|| (inputIgnoreUnkCheck.isSelected() && 
-														(inpdata[7].equals("Unk") || inpdata[7].equals("Unknown")))) {
-											continue;
-										}
-										if (start.length() == 0 || start.compareTo(inpdata[3]) > 0) start = inpdata[3];
-										if (end.length() == 0 || end.compareTo(inpdata[3]) < 0) end = inpdata[3];
-										newParams.inputDataEntries.add(new FEInputDataObject(inpdata, true, foundFeatures, problematicFeatures));
-									} catch (Exception e) {
-										break;
-									}
-								}
-								dis.close();
-							} */
-							startsAndEnds.add(new String[] {start, end});
-							sc.close();
-						} catch (Exception e) {
-							e.printStackTrace();
-							feControl.SimpleErrorDialog("Error occured when attempting to read "+f.getName()+".", 350);
-							return false;
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					feControl.SimpleErrorDialog("Error occured when attempting to read input files.", 350);
-					return false;
-				}
-			}
-			// Kudos to Lukas Eder on https://stackoverflow.com/questions/4699807/sort-arraylist-of-array-in-java.
-			startsAndEnds.sort(Comparator.comparing(a -> a[0]));
-			for (int i = 0; i < startsAndEnds.size()-1; i++) {
-				if (startsAndEnds.get(i)[1].compareTo(startsAndEnds.get(i+1)[0]) >= 0) {
-					String message = "The selected input files overlap each other in terms of date/time. This may result in features being extracted "
-							+ "from the wrong audio file and multiple instances of the same data entry appearing in the output file.\n\n"
-							+ "Proceed? (It is highly advised that you don't!)";
-					int res = JOptionPane.showConfirmDialog(this,
-							feControl.makeHTML(message, 350),
-							feControl.getUnitName(),
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.WARNING_MESSAGE);
-					if (res != JOptionPane.YES_OPTION) return false;
-					break;
-				}
-			}
-			if (newParams.inputDataEntries.size() == 0) {
-				feControl.SimpleErrorDialog("Input data files contain no valid entries.", 300);
-				return false;
-			}
-			newParams.inputDataFiles = inputDataList;
-			newParams.inputDataEntries.sort(Comparator.comparing(a -> a.datetime));
-		/*	ArrayList<Integer> intList = new ArrayList<Integer>();
-			for (int i = 0; i < newParams.inputDataEntries.size(); i++) {
-				intList.add(i);
-			}
-			newParams.inputDataIndexes = new ArrayList<Integer>(intList); */
-			newParams.inputDataExpectedFileSize = Integer.valueOf(inputDataFileSizeField.getText());
-			newParams.inputIgnoreBlanks = inputIgnoreBlanksCheck.isSelected();
-			newParams.inputIgnore2SecondGlitch = inputIgnore2SecondGlitchCheck.isSelected();
-			newParams.inputIgnoreFalsePositives = inputIgnoreFalsePositivesCheck.isSelected();
-			newParams.inputIgnoreUnk = inputIgnoreUnkCheck.isSelected();
-		}
-		newParams.outputDataOption = outputDataBox.getSelectedIndex();
-		if (outputDataBox.getSelectedIndex() > 0) {
-			if (outputDataField.getText() != "No file selected.") {
-				newParams.outputDataName = outputDataField.getText();
-			} else {
-				newParams.outputDataName = "";
-			}
-		}
+		// Do all the non-file reading stuff first.
 		newParams.audioSourceProcessName = audioSourcePanel.getSourceName();
 		PamDataBlock dbForSR = feControl.getPamController().getDataBlockByLongName(audioSourcePanel.getSourceName());
 		if (dbForSR != null) newParams.sr = (int) dbForSR.getSampleRate();
@@ -2150,14 +2050,19 @@ public class FESettingsDialog extends PamDialog {
 		newParams.expMaxClipsAtOnce = (int) expMaxClipsAtOnceSpinner.getValue();
 		newParams.expBlockPushTriggerBuffer = Integer.valueOf(expBlockPushTriggerBufferField.getText());
 		
-		//if (outputDataCheck.isSelected()) {
+		// Do the output stuff next.
+		newParams.outputDataOption = outputDataBox.getSelectedIndex();
 		if (outputDataBox.getSelectedIndex() > 0) {
+			if (outputDataField.getText() != "No file selected.")
+				newParams.outputDataName = outputDataField.getText();
+			else
+				newParams.outputDataName = "";
 			ArrayList<String> unmatchedSettings = checkForUnmatchedOutputFileSettings(newParams);
 			if (unmatchedSettings.size() > 0) {
 				if (unmatchedSettings.get(0).equals("Error 1") || unmatchedSettings.get(0).equals("Error 2")) {
 					if (!clearFileAndAddSettingsInfo(newParams)) return false;
 				} else if (unmatchedSettings.get(0).equals("Error 8")) {
-					feControl.SimpleErrorDialog("Error occured while attempting to parse output file.", 250);
+					feControl.simpleErrorDialog("Error occured while attempting to parse output file.", 250);
 					return false;
 				} else {
 					String message = "";
@@ -2167,11 +2072,11 @@ public class FESettingsDialog extends PamDialog {
 						System.out.println("Unmatched settings: "+unmatchedSettings.get(0));
 						message = "The selected file is not formatted correctly.\n";
 					} else {
-						message = "Selected file contained settings that don't match:\n\n";
+						message = "Selected output file contains settings that don't match:\n\n";
 						for (int i = 0; i < unmatchedSettings.size(); i++)
 							message += unmatchedSettings.get(i) + "\n";
 					}
-					message += "\nThe selected file needs to be cleared in order to proceed.\n\nContinue?";
+					message += "\nThe output file needs to be cleared in order to proceed.\n\nContinue?";
 					int res = JOptionPane.showConfirmDialog(this,
 							feControl.makeHTML(message, 300),
 							feControl.getUnitName(),
@@ -2207,6 +2112,27 @@ public class FESettingsDialog extends PamDialog {
 					if (!clearFileAndAddSettingsInfo(newParams)) return false;
 				} else if (res == JOptionPane.CANCEL_OPTION) return false;
 			}
+		}
+		
+		// And finally the input stuff.
+		newParams.inputFromWMATorMTSF = inputDataRB.isSelected();
+		if (inputProcessRB.isSelected()) {
+			if (inputSourcePanel.getSourceIndex() > -1)
+				newParams.inputProcessName = (String) inputSourcePanel.getSourceName();
+			else
+				newParams.inputProcessName = "";
+			feControl.loadInputWMATDataEntries(newParams, null); // Clears the WMAT data list just to save space if it's not being used.
+		} else if (inputDataRB.isSelected()) {
+			newParams.inputDataExpectedFileSize = Integer.valueOf(inputDataFileSizeField.getText());
+			newParams.inputIgnoreBlanks = inputIgnoreBlanksCheck.isSelected();
+			newParams.inputIgnore2SecondGlitch = inputIgnore2SecondGlitchCheck.isSelected();
+			newParams.inputIgnoreFalsePositives = inputIgnoreFalsePositivesCheck.isSelected();
+			newParams.inputIgnoreUnk = inputIgnoreUnkCheck.isSelected();
+			if (!feControl.loadInputWMATDataEntries(newParams, inputDataList)) // WMAT/MTSF input data is now loaded into FEControl instead of FEParameters.
+				return false;
+			newParams.inputWMATFileNames = new ArrayList<String>(); // File names still have to be saved to the params though.
+			while (inputDataList.size() > 0)
+				newParams.inputWMATFileNames.add(inputDataList.remove(0).getAbsolutePath());
 		}
 		
 		feControl.setParams(newParams);

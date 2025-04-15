@@ -119,7 +119,7 @@ public class TCSidePanelPanel extends PamBorderPanel {
 		if (params.loadedTestingSetInfo == null ||
 				(params.validation >= params.LABELLED && params.loadedTestingSetInfo == null)) {
 			loadingBar.setString("Idle");
-			getControl().SimpleErrorDialog("Training/testing sets have not been configured.", 250);
+			getControl().simpleErrorDialog("Training/testing sets have not been configured.", 250);
 			return;
 		}
 		StartThread startThread = new StartThread();

@@ -67,7 +67,8 @@ public class MIRFEETempFolderDialog extends PamDialog {
 				+ "Unfortunately, PamGuard's file security configuration doesn't allow the program to create new files or folders within PamGuard's own "
 				+ "folders, so a different folder must be created.<br><br>"
 				+ "A new folder named \"MIRFEE Temp\\"+subfolderName+"\\[key]\" will be created in the folder you select (unless the selected folder is named \"MIRFEE Temp\" itself). "
-				+ "NOTE THAT anything placed inside the new folder will be deleted every time the "+subfolderName+" is run.", 300)), b);
+				+ "NOTE THAT anything placed inside the new folder will be deleted every time the "+subfolderName+" is run. Do NOT select the same folder containing any audio you plan on "
+				+ "processing.", 300)), b);
 		b.gridy++;
 		b.gridwidth = 2;
 		fileField = new JTextField(30);
@@ -149,7 +150,7 @@ public class MIRFEETempFolderDialog extends PamDialog {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(null,
 			inptext,
 			unitName,
@@ -161,11 +162,11 @@ public class MIRFEETempFolderDialog extends PamDialog {
 		String currPath = fileField.getText();
 		File testFile = new File(currPath);
 		if (!testFile.exists()) {
-			SimpleErrorDialog("Selected folder does not exist.");
+			simpleErrorDialog("Selected folder does not exist.");
 			return false;
 		}
 		if (!testFile.isDirectory()) {
-			SimpleErrorDialog("Selected object is not a folder.");
+			simpleErrorDialog("Selected object is not a folder.");
 			return false;
 		}
 		if (!currPath.endsWith("MIRFEE Temp\\")) {
@@ -174,7 +175,7 @@ public class MIRFEETempFolderDialog extends PamDialog {
 		}
 		if (!testFile.exists()) {
 			if (!testFile.mkdir()) {
-				SimpleErrorDialog("Could not create MIRFEE Temp folder within selected folder.");
+				simpleErrorDialog("Could not create MIRFEE Temp folder within selected folder.");
 				return false;
 			}
 		}
@@ -192,7 +193,7 @@ public class MIRFEETempFolderDialog extends PamDialog {
 		testFile = new File(currPath+"test.txt");
 		if (testFile.canRead()) {
 			if (!testFile.delete()) {
-				SimpleErrorDialog("Folder does not allow file management.");
+				simpleErrorDialog("Folder does not allow file management.");
 				return false;
 			}
 		} else {
@@ -201,11 +202,11 @@ public class MIRFEETempFolderDialog extends PamDialog {
 				if (boo) {
 					testFile.delete();
 				} else {
-					SimpleErrorDialog("Folder does not allow file management.");
+					simpleErrorDialog("Folder does not allow file management.");
 					return false;
 				}
 			} catch(Exception e) {
-				SimpleErrorDialog("Folder does not allow file management.");
+				simpleErrorDialog("Folder does not allow file management.");
 				return false;
 			}
 		}

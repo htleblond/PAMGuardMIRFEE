@@ -46,7 +46,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 	 */
 	public boolean initializeTrainingSets() {
 		if (running) {
-			getControl().SimpleErrorDialog("This action cannot be performed while another process is active.", 250);
+			getControl().simpleErrorDialog("This action cannot be performed while another process is active.", 250);
 			getLoadingBar().setString("Idle");
 			return false;
 		}
@@ -142,7 +142,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 		}
 		if (lastInitFailed || !running) {
 	        addCommand("modelManager.clearModelList()");
-			if (lastInitFailed) getControl().SimpleErrorDialog("Error occured while attempting to fit classifier models in Python. "
+			if (lastInitFailed) getControl().simpleErrorDialog("Error occured while attempting to fit classifier models in Python. "
 					+ "See console for details.", 250);
 			//getLoadingBar().setString("Idle");
 			//getStartButton().setText("Start");
@@ -177,7 +177,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 	 */
 	public boolean initializeBestFeaturesSet() {
 		if (running) {
-			getControl().SimpleErrorDialog("This action cannot be performed while another process is active.", 250);
+			getControl().simpleErrorDialog("This action cannot be performed while another process is active.", 250);
 			return false;
 		}
 		TCParameters params = getControl().getParams();
@@ -194,7 +194,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
         String initCommand = "tcmBest = LCPythonScript.LCModel(r\""+params.getTrainPath()+"\","+pyParams+",[],[],True)";
 		initializeModel(initCommand);
 		if (lastInitFailed || !running) {
-			if (lastInitFailed) getControl().SimpleErrorDialog("Error occured while attempting to fit classifier models in Python. "
+			if (lastInitFailed) getControl().simpleErrorDialog("Error occured while attempting to fit classifier models in Python. "
 					+ "See console for details.", 250);
 			lastInitFailed = false;
 			running = false;
@@ -213,13 +213,13 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 		LCTrainingSetInfo setInfo = params.getTrainingSetInfo();
 		if (params.validation >= params.LABELLED) setInfo = params.getTestingSetInfo();
 		if (setInfo.compare(new LCTrainingSetInfo("")) || setInfo.compare(new LCTrainingSetInfo(null))) {
-			getControl().SimpleErrorDialog("Set containing values to be tested is invalid.", 250);
+			getControl().simpleErrorDialog("Set containing values to be tested is invalid.", 250);
 			endProcess("Stopped (error)");
 			return;
 		}
 		File f = new File(setInfo.pathName);
 		if (!f.exists()) {
-			getControl().SimpleErrorDialog("Set containing values to be tested no longer exists.", 250);
+			getControl().simpleErrorDialog("Set containing values to be tested no longer exists.", 250);
 			endProcess("Stopped (error)");
 			return;
 		}
@@ -232,7 +232,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 			//if (sc.hasNextLine()) nextSplit = sc.nextLine().split(",");
 			if (sc.hasNextLine()) nextLine = sc.nextLine();
 			else {
-				getControl().SimpleErrorDialog("Set containing values to be tested is apparently now empty.", 250);
+				getControl().simpleErrorDialog("Set containing values to be tested is apparently now empty.", 250);
 				sc.close();
 				endProcess("Stopped (error)");
 				return;
@@ -254,7 +254,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (sc != null) sc.close();
-			getControl().SimpleErrorDialog("Error scanning set for testing.", 300);
+			getControl().simpleErrorDialog("Error scanning set for testing.", 300);
 			endProcess("Stopped (error)");
 			return;
 		}
@@ -357,7 +357,7 @@ public class TCPythonThreadManager extends LCPythonThreadManager {
 			waitingOnModel = false;
 		}
 		if (outpstr.equals("ERROR - ModelManager is empty.")) {
-			getControl().SimpleErrorDialog("Whoops - no training models have been initialized yet.", 350);
+			getControl().simpleErrorDialog("Whoops - no training models have been initialized yet.", 350);
 			endProcess("Stopped"); // TODO Make sure this doesn't cause any problems.
 		}
 		if (outpstr.startsWith("ERROR - Input test entry found in all training sets: ")) {

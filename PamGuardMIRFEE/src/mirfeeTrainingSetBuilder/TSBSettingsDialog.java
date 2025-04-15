@@ -257,7 +257,7 @@ public class TSBSettingsDialog extends PamDialog {
 			String newClass = JOptionPane.showInputDialog("Enter new umbrella class:");
 			if (newClass == null) return;
 			if (umbrellaList.contains(newClass)) {
-				tsbControl.SimpleErrorDialog("Input umbrella class already exists", 250);
+				tsbControl.simpleErrorDialog("Input umbrella class already exists", 250);
 				return;
 			}
 			umbrellaList.add(newClass);
@@ -308,7 +308,7 @@ public class TSBSettingsDialog extends PamDialog {
 			newParams.multilabelOption = multilabelOptionsBox.getSelectedIndex();
 		} catch (Exception e) {
 			e.printStackTrace();
-			tsbControl.SimpleErrorDialog("An error occurred - see console for details.", 200);
+			tsbControl.simpleErrorDialog("An error occurred - see console for details.", 200);
 			return false;
 		}
 		tsbControl.setParams(newParams);

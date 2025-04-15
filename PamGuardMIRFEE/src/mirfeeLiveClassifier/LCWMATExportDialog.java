@@ -124,7 +124,7 @@ public class LCWMATExportDialog extends PamDialog {
 		int updateCount = wmatControl.importLCPredictions(lcControl.getProcess().resultsDataBlock, exportOptionBox.getSelectedIndex() == 1,
 															res == JOptionPane.YES_OPTION, overwriteCheck.isSelected(), minCertainty);
 		if (updateCount == -1) {
-			lcControl.SimpleErrorDialog("No data has been loaded into the WMAT.");
+			lcControl.simpleErrorDialog("No data has been loaded into the WMAT.");
 		} else if (updateCount == 0) {
 			JOptionPane.showMessageDialog(this, "No entries in the WMAT were updated, as no matches were found.", "MIRFEE Live Classifier", JOptionPane.WARNING_MESSAGE);
 		} else {

@@ -117,12 +117,12 @@ public class LCAliasDialog extends PamDialog {
 			if (newAlias == null) return;
 			for (int i = 0; i < loadedClasses.length; i++) {
 				if (loadedClasses[i].equals(newAlias)) {
-					lcControl.SimpleErrorDialog("Alias cannot be the same as a class in the training set.", 250);
+					lcControl.simpleErrorDialog("Alias cannot be the same as a class in the training set.", 250);
 					return;
 				}
 			}
 			if (currentAliasesList.contains(newAlias)) {
-				lcControl.SimpleErrorDialog("Input alias already in list.", 250);
+				lcControl.simpleErrorDialog("Input alias already in list.", 250);
 				return;
 			}
 			currentAliasesList.add(newAlias);
@@ -144,7 +144,7 @@ public class LCAliasDialog extends PamDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (currentAliasesList.size() == 0) {
-				lcControl.SimpleErrorDialog("No aliases have been created.");
+				lcControl.simpleErrorDialog("No aliases have been created.");
 				return;
 			}
 			JPanel removePanel = new JPanel(new GridBagLayout());

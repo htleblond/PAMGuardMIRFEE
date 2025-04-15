@@ -37,3 +37,17 @@ WMAT:
 - Fixed bug that caused an exception when exporting to a .wmat or .txt file due to a misconfiguration with the new table columns.
 - Fixed bug where attempting to export a .csv file does nothing.
 - Fixed some minor mislabellings.
+
+1.07c (April 15th, 2025)
+General:
+- Max limit removed on the number of instances of each MIRFEE module (except for the WMAT) that can be added to the configuration.
+Feature Extractor:
+- Moved input WMAT/MTSF data from parameters file to control object, so that data is no longer stored in the configuration file. This was causing extreme space complexity issues in recent PAMGuard updates.
+- Added button for importing audio settings from a pre-existing output file.
+- Added "False Detection" as a species label that can be ignored (request).
+- Fixed bug where floats in Python would be output with "np.float64()" attached due to a recent NumPy update.
+- Fixed bug where formant-based features calculated on the full clip would be considered invalid when attempting to import them from a file.
+- Fixed oversight where attempting to output to a file but not actually selecting said file was not accounted for.
+- Amended some warning dialogs and button text for clarity.
+WMAT:
+- Fixed slight oversight where SQLite databases saved with the .db extension would be interpreted as MySQL databases.

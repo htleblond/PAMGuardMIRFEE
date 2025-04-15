@@ -257,11 +257,11 @@ public class LCPanel extends PamBorderPanel {
 	 */
 	protected void bestFeaturesButtonAction() {
 		if (control.isViewer()) {
-			control.SimpleErrorDialog("This function is only available in regular processing mode.", 250);
+			control.simpleErrorDialog("This function is only available in regular processing mode.", 250);
 			return;
 		}
 		if (!control.isTrainingSetLoaded()) {
-			control.SimpleErrorDialog("No training set has been loaded yet.", 250);
+			control.simpleErrorDialog("No training set has been loaded yet.", 250);
 			return;
 		}
 		wdThread = new LCWaitingDialogThread(control.getGuiFrame(), control, "Waiting for response from Python script...");
@@ -275,7 +275,7 @@ public class LCPanel extends PamBorderPanel {
 	class ScrollButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (!control.isViewer()) {
-				control.SimpleErrorDialog("This function in only available in viewer mode.", 250);
+				control.simpleErrorDialog("This function in only available in viewer mode.", 250);
 				return;
 			}
 			if (resultsTable.getRowCount() > 0) {
@@ -296,7 +296,7 @@ public class LCPanel extends PamBorderPanel {
 						vsm.loadData(true);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
-						control.SimpleErrorDialog("Error parsing date from table.", 250);
+						control.simpleErrorDialog("Error parsing date from table.", 250);
 					}
 					return;
 				}
@@ -333,7 +333,7 @@ public class LCPanel extends PamBorderPanel {
 			System.out.println(db.getLongDataName()+" -> "+String.valueOf(db.getNumOfflineDataMaps()));
 		} */
 		if (!control.isViewer()) {
-			control.SimpleErrorDialog("This feature is only available in viewer mode.", 250);
+			control.simpleErrorDialog("This feature is only available in viewer mode.", 250);
 			return;
 		}
 		WMATControl wmatControl = null;
@@ -345,7 +345,7 @@ public class LCPanel extends PamBorderPanel {
 			}
 		}
 		if (wmatControl == null) {
-			control.SimpleErrorDialog("No instance of the Whistle and Moan Annotation Tool has been added to this configuration. To add one, go to "
+			control.simpleErrorDialog("No instance of the Whistle and Moan Annotation Tool has been added to this configuration. To add one, go to "
 					+ "File -> Add Modules -> Utilities.", 300);
 			return;
 		}

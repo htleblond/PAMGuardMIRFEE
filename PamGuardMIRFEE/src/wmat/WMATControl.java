@@ -59,7 +59,7 @@ public class WMATControl extends PamControlledUnit implements PamSettings {
 	/**
 	 * Streamlined error dialog.
 	 */
-	public void SimpleErrorDialog() {
+	public void simpleErrorDialog() {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 			"An error has occured.\nSee console for details.",
 			"Whistle and Moan Annotation Tool",
@@ -69,7 +69,7 @@ public class WMATControl extends PamControlledUnit implements PamSettings {
 	/**
 	 * Streamlined error dialog with an editable message.
 	 */
-	public void SimpleErrorDialog(String inptext) {
+	public void simpleErrorDialog(String inptext) {
 		JOptionPane.showMessageDialog(this.getGuiFrame(),
 			inptext,
 			"Whistle and Moan Annotation Tool",

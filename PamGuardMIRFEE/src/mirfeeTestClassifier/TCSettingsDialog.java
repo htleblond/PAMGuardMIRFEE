@@ -179,7 +179,7 @@ public class TCSettingsDialog extends LCSettingsDialog {
 		if (loadedTrainingSet.featureList.size() != inp.size()) return false;
 		for (int i = 0; i < inp.size(); i++) {
 			if (!loadedTrainingSet.featureList.get(i).equals(inp.get(i))) {
-				lcControl.SimpleErrorDialog("Features found in testing set do not match those "
+				lcControl.simpleErrorDialog("Features found in testing set do not match those "
 						+ "found in training set.", 250);
 				return false;
 			}
@@ -196,10 +196,10 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			String nextKey = it.next();
 			if (!inp.containsKey(nextKey) || !currMap.get(nextKey).equals(inp.get(nextKey))) {
 				int res = JOptionPane.showConfirmDialog(this,
-						"The selected set contains Feature Extractor settings information that "
-						+ "does not match those found in the training set. "
-						+ "It can still be used (as long as the features match), but it will likely "
-						+ "not produce optimal results. Proceed?",
+						getControl().makeHTML("The selected set contains Feature Extractor settings information that "
+								+ "does not match those found in the training set. "
+								+ "It can still be used (as long as the features match), but it will likely "
+								+ "not produce optimal results. Proceed?", 350),
 						lcControl.getUnitName(),
 						JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.WARNING_MESSAGE,
@@ -267,14 +267,14 @@ public class TCSettingsDialog extends LCSettingsDialog {
 	public boolean checkClassSpread(LCTrainingSetInfo curr, TCParameters params) {
 		//if (kFold) testSubset = false; // kFold overrides testSubset.
 		if (params.validation == params.TESTSUBSET && testSubsetBox.getItemCount() == 0) {
-			getControl().SimpleErrorDialog("Invalid testing subset selected.", 250);
+			getControl().simpleErrorDialog("Invalid testing subset selected.", 250);
 			return false;
 		}
 		//TCParameters params = generateParameters();
 		HashMap<String, boolean[]> containMap = new HashMap<String, boolean[]>();
 		File f = new File(curr.pathName);
 		if (!f.exists()) {
-			getControl().SimpleErrorDialog("Selected training set apparently no longer exists.", 250);
+			getControl().simpleErrorDialog("Selected training set apparently no longer exists.", 250);
 			return false;
 		}
 		Scanner sc = null;
@@ -283,7 +283,7 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			int numLines = -1;
 			ArrayList<String> clusterList = new ArrayList<String>();
 			if (!sc.hasNextLine()) {
-				getControl().SimpleErrorDialog("Selected training set is apparently now empty.", 250);
+				getControl().simpleErrorDialog("Selected training set is apparently now empty.", 250);
 				sc.close();
 				return false;
 			}
@@ -299,12 +299,12 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			}
 			sc.close();
 			if (numLines <= 0) {
-				getControl().SimpleErrorDialog("Selected training set is apparently now empty.", 250);
+				getControl().simpleErrorDialog("Selected training set is apparently now empty.", 250);
 				return false;
 			}
 			int kNum = params.kNum;
 			if (params.validation == params.KFOLD && clusterList.size() < kNum) {
-				getControl().SimpleErrorDialog("k-fold number must be greater than the number of call clusters in the table.", 250);
+				getControl().simpleErrorDialog("k-fold number must be greater than the number of call clusters in the table.", 250);
 				return false;
 			}
 			clusterList.sort(Comparator.naturalOrder());
@@ -341,7 +341,7 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			}
 			sc.close();
 			if (params.validation == params.TESTSUBSET && containMap.size() == 0) {
-				getControl().SimpleErrorDialog("Training set must contain at least one other subset for training in order to "
+				getControl().simpleErrorDialog("Training set must contain at least one other subset for training in order to "
 						+ "test individual subsets.", 250);
 				return false;
 			}
@@ -354,34 +354,34 @@ public class TCSettingsDialog extends LCSettingsDialog {
 				}
 				if (occursIn == 0) {
 					if (params.validation == params.TESTSUBSET) {
-						getControl().SimpleErrorDialog("\""+labelList.get(i)+"\" only occurs in the selected "
+						getControl().simpleErrorDialog("\""+labelList.get(i)+"\" only occurs in the selected "
 								+ "testing subset. It must occur somewhere else in the set as well.", 250);
 						return false;
 					}
 					else throw new LabelNotFoundException();
 				}
 				if (occursIn == 1 && params.validation <= 3) {
-					if (params.validation == params.KFOLD) getControl().SimpleErrorDialog("\""+labelList.get(i)+"\" only occurs in one fold. "
+					if (params.validation == params.KFOLD) getControl().simpleErrorDialog("\""+labelList.get(i)+"\" only occurs in one fold. "
 								+ "Try again with a new k-value or consider spreading the label "
 								+ "out through the set more.", 250);
-					else getControl().SimpleErrorDialog("\""+labelList.get(i)+"\" only occurs in one subset. "
+					else getControl().simpleErrorDialog("\""+labelList.get(i)+"\" only occurs in one subset. "
 								+ "It must occur in multiple subsets in order for leave-one-out "
 								+ "cross-validation to work.", 250);
 					return false;
 				}
 			}
 		} catch (FileNotFoundException e) {
-			getControl().SimpleErrorDialog("Selected training set apparently no longer exists.", 250);
+			getControl().simpleErrorDialog("Selected training set apparently no longer exists.", 250);
 			return false;
 		} catch (LabelNotFoundException e2) {
 			e2.printStackTrace();
-			getControl().SimpleErrorDialog("Label was not found in the set during the second scan. "
+			getControl().simpleErrorDialog("Label was not found in the set during the second scan. "
 					+ "This should not happen and is entirely the developer's fault.", 250);
 			return false;
 		} catch (Exception e3) {
 			sc.close();
 			e3.printStackTrace();
-			getControl().SimpleErrorDialog("Could not read selected training set. It may not be formatted properly.", 250);
+			getControl().simpleErrorDialog("Could not read selected training set. It may not be formatted properly.", 250);
 			return false;
 		}
 		return true;
@@ -401,20 +401,20 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			curr = readTrainingSet(false, showLoadingDialogs, new File(loadedTrainingSet.pathName));
 			if (curr == null) return false;
 			if (!loadedTrainingSet.compare(curr)) {
-				getControl().SimpleErrorDialog("Training set appears to have changed. Re-select it and try again.", 250);
+				getControl().simpleErrorDialog("Training set appears to have changed. Re-select it and try again.", 250);
 				return false;
 			}
 		}
 		if (curr == null) {
-			getControl().SimpleErrorDialog("No training set has been selected.", 250);
+			getControl().simpleErrorDialog("No training set has been selected.", 250);
 			return false;
 		}
 		if (curr.labelCounts.keySet().size() <= 1) {
-			getControl().SimpleErrorDialog("Training set must contain at least two different class labels.", 250);
+			getControl().simpleErrorDialog("Training set must contain at least two different class labels.", 250);
 			return false;
 		}
 		if (curr.featureList.size() <= 1) {
-			getControl().SimpleErrorDialog("Training set must contain at least two features.", 250);
+			getControl().simpleErrorDialog("Training set must contain at least two features.", 250);
 			return false;
 		}
 	/*	if (params.validation == params.LEAVEONEOUT) {
@@ -441,27 +441,27 @@ public class TCSettingsDialog extends LCSettingsDialog {
 	public boolean checkIfTestingSetIsValid(LCTrainingSetInfo inp, boolean readThroughFile, boolean showLoadingDialogs) {
 		TCParameters params = generateParameters();
 		if (inp == null || inp.pathName.length() == 0) {
-			getControl().SimpleErrorDialog("No testing set has been selected.", 250);
+			getControl().simpleErrorDialog("No testing set has been selected.", 250);
 			return false;
 		}
 		if (loadedTrainingSet == null || loadedTrainingSet.pathName.length() == 0) {
-			getControl().SimpleErrorDialog("Training set needs to be selected first.", 250);
+			getControl().simpleErrorDialog("Training set needs to be selected first.", 250);
 			return false;
 		}
 		LCTrainingSetInfo curr = inp;
 		if (readThroughFile) curr = readTrainingSet(true, showLoadingDialogs, new File(loadedTestingSet.pathName));
 		if (curr == null) return false;
 		if (curr.pathName.equals(loadedTrainingSet.pathName)) {
-			getControl().SimpleErrorDialog("Training and testing sets cannot be the same file.", 250);
+			getControl().simpleErrorDialog("Training and testing sets cannot be the same file.", 250);
 			return false;
 		}
 		if (curr.featureList.size() != loadedTrainingSet.featureList.size()) {
-			getControl().SimpleErrorDialog("Features between training and testing sets are not the same.", 250);
+			getControl().simpleErrorDialog("Features between training and testing sets are not the same.", 250);
 			return false;
 		}
 		for (int i = 0; i < curr.featureList.size(); i++) {
 			if (!curr.featureList.get(i).equals(loadedTrainingSet.featureList.get(i))) {
-				getControl().SimpleErrorDialog("Features between training and testing sets are not the same.", 250);
+				getControl().simpleErrorDialog("Features between training and testing sets are not the same.", 250);
 				return false;
 			}
 		}
@@ -477,7 +477,7 @@ public class TCSettingsDialog extends LCSettingsDialog {
 			}
 		}
 		if (matchingClasses == 0) {
-			getControl().SimpleErrorDialog("Testing set shares no class labels with training set.", 250);
+			getControl().simpleErrorDialog("Testing set shares no class labels with training set.", 250);
 			return false;
 		}
 		if (mismatchedClasses > 0) {

@@ -65,7 +65,7 @@ public class TSBFeatureDialog extends PamDialog {
 	@Override
 	public boolean getParams() {
 		if (featureSelectionList.getSelectedIndices().length < 2) {
-			tsbControl.SimpleErrorDialog("At least two features must be selected.", 150);
+			tsbControl.simpleErrorDialog("At least two features must be selected.", 150);
 			return false;
 		}
 		tsbControl.getTabPanel().getPanel().setOutputFeatureIndices(featureSelectionList.getSelectedIndices());

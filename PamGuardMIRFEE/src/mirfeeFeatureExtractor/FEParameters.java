@@ -19,12 +19,12 @@ public class FEParameters extends MIRFEEParameters {
 	
 	public int sr;
 	
-	public boolean inputFromCSV;
+	public boolean inputFromWMATorMTSF;
 	public String inputProcessName;
-	public ArrayList<File> inputDataFiles;
-	//public ArrayList<String[]> inputCSVEntries;
-	public ArrayList<FEInputDataObject> inputDataEntries;
-	public ArrayList<Integer> inputDataIndexes;
+	public ArrayList<String> inputWMATFileNames;
+	//public ArrayList<File> inputDataFiles;
+	//public ArrayList<FEInputDataObject> inputDataEntries;
+	//public ArrayList<Integer> inputDataIndexes;
 	public int inputDataExpectedFileSize;
 	public boolean inputIgnoreBlanks;
 	public boolean inputIgnore2SecondGlitch;
@@ -84,12 +84,12 @@ public class FEParameters extends MIRFEEParameters {
 		
 		this.sr = 0;
 		
-		this.inputFromCSV = false;
+		this.inputFromWMATorMTSF = false;
 		this.inputProcessName = "";
-		this.inputDataFiles = new ArrayList<File>();
-		//this.inputCSVEntries = new ArrayList<String[]>();
-		this.inputDataEntries = new ArrayList<FEInputDataObject>();
-		this.inputDataIndexes = new ArrayList<Integer>();
+		this.inputWMATFileNames = new ArrayList<String>();
+		//this.inputDataFiles = new ArrayList<File>();
+		//this.inputDataEntries = new ArrayList<FEInputDataObject>();
+		//this.inputDataIndexes = new ArrayList<Integer>();
 		this.inputDataExpectedFileSize = 10;
 		this.inputIgnoreBlanks = true;
 		this.inputIgnore2SecondGlitch = true;
@@ -157,8 +157,8 @@ public class FEParameters extends MIRFEEParameters {
 	}
 	
 	public boolean inputFilesAreMTSF() {
-		return this.inputFromCSV && this.inputDataFiles.size() > 0 && 
-				(this.inputDataFiles.get(0).getAbsolutePath().endsWith(".mirrfts") || this.inputDataFiles.get(0).getAbsolutePath().endsWith(".mtsf"));
+		return this.inputFromWMATorMTSF && this.inputWMATFileNames.size() > 0 && 
+				(this.inputWMATFileNames.get(0).endsWith(".mirrfts") || this.inputWMATFileNames.get(0).endsWith(".mtsf"));
 	}
 	
 	public HashMap<String, String> outputParamsToHashMap() {
@@ -239,7 +239,7 @@ public class FEParameters extends MIRFEEParameters {
 			return "";
 		}
 		String outp = "[";
-		if (inputFromCSV) {
+		if (inputFromWMATorMTSF) {
 			if (inputFilesAreMTSF())
 				outp += "\"mtsf\",";
 			else
