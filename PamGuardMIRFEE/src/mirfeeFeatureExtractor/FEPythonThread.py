@@ -33,8 +33,8 @@ from builtins import FileNotFoundError
 # for each cluster, and sound clips should be fed into it via addClip.
 class FEThread():
     def __init__(self, y_nr_name: str, y_nr: np.ndarray, txtParams: list):
-        np.set_printoptions(legacy='1.25')
         #print("In thread __init__.")
+        #np.set_printoptions(legacy='1.25')
         self.active = True
         self.clipList = []
         self.y_nr = y_nr
@@ -622,6 +622,7 @@ class FEThread():
     
 class HeaderData:
     def __init__(self, uid, datelong, amplitude, duration, freqhd_min, freqhd_max, slice_data, pe_cluster_id, pe_location, pe_label, pe_header_features):
+        #np.set_printoptions(legacy='1.25')
         self.uid = uid
         self.datelong = datelong
         self.amplitude = amplitude
@@ -636,6 +637,7 @@ class HeaderData:
 
 # Loads clip into a variable and then deletes the file, as it is no longer needed.
 def loadAudio(fn: str, sr: int):
+    #np.set_printoptions(legacy='1.25')
     warnings.simplefilter(action='ignore', category=FutureWarning)
     try:
         y, newsr = librosa.load(fn, sr=sr)

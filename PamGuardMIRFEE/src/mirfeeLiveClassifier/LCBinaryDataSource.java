@@ -196,7 +196,7 @@ public class LCBinaryDataSource extends BinaryDataSource {
 					return null;
 				}
 			}
-			System.out.println(clusterID+": "+String.valueOf(nDetections)+" detections");
+			//System.out.println(clusterID+": "+String.valueOf(nDetections)+" detections");
 			for (int i = 0; i < nDetections; i++) {
 				cc.uids[i] = dis.readLong();
 				cc.datetimes[i] = dis.readLong(); // NOTE that this is in local time.

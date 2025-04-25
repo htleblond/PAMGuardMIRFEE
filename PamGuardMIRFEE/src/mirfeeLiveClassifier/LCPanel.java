@@ -59,6 +59,7 @@ public class LCPanel extends PamBorderPanel {
 	protected volatile int[][] accuracyMatrix;
 	protected volatile JLabel[][] jLabelAccuracyMatrix;
 	
+	protected final Object confMatrixKey = 0;
 	protected volatile int[][] confMatrix;
 	protected volatile JLabel[][] jLabelConfMatrix;
 	
@@ -458,54 +459,56 @@ public class LCPanel extends PamBorderPanel {
 			jLabelAccuracyMatrix[jLabelAccuracyMatrix.length-1][6] = new JLabel("0");
 		}
 		
-		confMatrix = new int[labelOrder.length+2][labelOrder.length];
-		jLabelConfMatrix = new JLabel[labelOrder.length+4][labelOrder.length+2];
-		for (int i = 0; i < jLabelConfMatrix.length; i++) {
-			for (int j = 0; j < jLabelConfMatrix[i].length; j++) {
-				if (i == 0) {
-					if (j == 0) {
-						jLabelConfMatrix[i][j] = new JLabel("");
-					} else if (j == labelOrder.length+1) {
-						jLabelConfMatrix[i][j] = new JLabel("Recall");
-					} else {
-						jLabelConfMatrix[i][j] = new JLabel(labelOrder[j-1]);
-					}
-				} else if (i == labelOrder.length+1) {
-					if (j == 0) {
-						jLabelConfMatrix[i][j] = new JLabel("Prcsn.");
-					} else {
-						jLabelConfMatrix[i][j] = new JLabel("-%");
-					}
-				} else {
-					if (i < labelOrder.length+1 && j == 0) {
-						jLabelConfMatrix[i][j] = new JLabel(labelOrder[i-1]);
-					} else if (i < labelOrder.length+1 && j == labelOrder.length+1) {
-						jLabelConfMatrix[i][j] = new JLabel("-%");
-					} else if (i == labelOrder.length+2 && j == 0) {
-						jLabelConfMatrix[i][j] = new JLabel("Oth.");
-					} else if (i == labelOrder.length+2 && j == labelOrder.length+1) {
-						jLabelConfMatrix[i][j] = new JLabel("");
-					} else if (i == labelOrder.length+3 && j == 0) {
-						jLabelConfMatrix[i][j] = new JLabel("Unl.");
-					} else if (i == labelOrder.length+3 && j == labelOrder.length+1) {
-						jLabelConfMatrix[i][j] = new JLabel("");
-					} else {
-						jLabelConfMatrix[i][j] = new JLabel("0");
-						if (i < labelOrder.length+1) {
-							confMatrix[i-1][j-1] = 0;
+		synchronized(confMatrixKey) {
+			confMatrix = new int[labelOrder.length+2][labelOrder.length];
+			jLabelConfMatrix = new JLabel[labelOrder.length+4][labelOrder.length+2];
+			for (int i = 0; i < jLabelConfMatrix.length; i++) {
+				for (int j = 0; j < jLabelConfMatrix[i].length; j++) {
+					if (i == 0) {
+						if (j == 0) {
+							jLabelConfMatrix[i][j] = new JLabel("");
+						} else if (j == labelOrder.length+1) {
+							jLabelConfMatrix[i][j] = new JLabel("Recall");
 						} else {
-							confMatrix[i-2][j-1] = 0;
+							jLabelConfMatrix[i][j] = new JLabel(labelOrder[j-1]);
 						}
-						if (i-1 == j-1) {
-							jLabelConfMatrix[i][j].setForeground(Color.GREEN);
-						} else if (i < labelOrder.length+1) {
-							jLabelConfMatrix[i][j].setForeground(Color.RED);
+					} else if (i == labelOrder.length+1) {
+						if (j == 0) {
+							jLabelConfMatrix[i][j] = new JLabel("Prcsn.");
+						} else {
+							jLabelConfMatrix[i][j] = new JLabel("-%");
+						}
+					} else {
+						if (i < labelOrder.length+1 && j == 0) {
+							jLabelConfMatrix[i][j] = new JLabel(labelOrder[i-1]);
+						} else if (i < labelOrder.length+1 && j == labelOrder.length+1) {
+							jLabelConfMatrix[i][j] = new JLabel("-%");
+						} else if (i == labelOrder.length+2 && j == 0) {
+							jLabelConfMatrix[i][j] = new JLabel("Oth.");
+						} else if (i == labelOrder.length+2 && j == labelOrder.length+1) {
+							jLabelConfMatrix[i][j] = new JLabel("");
+						} else if (i == labelOrder.length+3 && j == 0) {
+							jLabelConfMatrix[i][j] = new JLabel("Unl.");
+						} else if (i == labelOrder.length+3 && j == labelOrder.length+1) {
+							jLabelConfMatrix[i][j] = new JLabel("");
+						} else {
+							jLabelConfMatrix[i][j] = new JLabel("0");
+							if (i < labelOrder.length+1) {
+								confMatrix[i-1][j-1] = 0;
+							} else {
+								confMatrix[i-2][j-1] = 0;
+							}
+							if (i-1 == j-1) {
+								jLabelConfMatrix[i][j].setForeground(Color.GREEN);
+							} else if (i < labelOrder.length+1) {
+								jLabelConfMatrix[i][j].setForeground(Color.RED);
+							}
 						}
 					}
 				}
 			}
-		}
-		showMatrices();
+			showMatrices();
+		} // synchronized ends here
 	}
 	
 	/**
@@ -710,57 +713,59 @@ public class LCPanel extends PamBorderPanel {
 	 * Updates the confusion matrix in the upper right panel for when results are added to the table.
 	 */
 	public void updateConfMatrixLabels() {
-		// fills in digits and updates row percentages
-		for (int i = 0; i < confMatrix.length; i++) {
-			int sum = 0;
-			for (int j = 0; j < confMatrix[i].length; j++) {
-				if (confMatrix[i][j] < 0) {
-					confMatrix[i][j] = 0;
+		synchronized(confMatrixKey) {
+			// fills in digits and updates row percentages
+			for (int i = 0; i < confMatrix.length; i++) {
+				int sum = 0;
+				for (int j = 0; j < confMatrix[i].length; j++) {
+					if (confMatrix[i][j] < 0) {
+						confMatrix[i][j] = 0;
+					}
+					//System.out.println(String.valueOf(i)+", "+String.valueOf(j));
+					if (i < confMatrix[i].length) {
+						jLabelConfMatrix[i+1][j+1].setText(String.valueOf(confMatrix[i][j]));
+						sum += confMatrix[i][j];
+					} else {
+						jLabelConfMatrix[i+2][j+1].setText(String.valueOf(confMatrix[i][j]));
+					}
 				}
-				//System.out.println(String.valueOf(i)+", "+String.valueOf(j));
 				if (i < confMatrix[i].length) {
-					jLabelConfMatrix[i+1][j+1].setText(String.valueOf(confMatrix[i][j]));
-					sum += confMatrix[i][j];
-				} else {
-					jLabelConfMatrix[i+2][j+1].setText(String.valueOf(confMatrix[i][j]));
+					if (sum > 0) {
+						jLabelConfMatrix[i+1][jLabelConfMatrix[i+1].length-1].setText(String.format("%.1f", 100*((double) confMatrix[i][i])/sum)+"%");
+					} else {
+						jLabelConfMatrix[i+1][jLabelConfMatrix[i+1].length-1].setText("-%");
+					}
 				}
 			}
-			if (i < confMatrix[i].length) {
-				if (sum > 0) {
-					jLabelConfMatrix[i+1][jLabelConfMatrix[i+1].length-1].setText(String.format("%.1f", 100*((double) confMatrix[i][i])/sum)+"%");
-				} else {
-					jLabelConfMatrix[i+1][jLabelConfMatrix[i+1].length-1].setText("-%");
-				}
-			}
-		}
-		// updates column percentages
-		for (int j = 0; j < confMatrix[0].length; j++) {
-			int sum = 0;
-			for (int i = 0; i < confMatrix[0].length; i++) {
-				sum += confMatrix[i][j];
-			}
-			if (sum > 0) {
-				jLabelConfMatrix[confMatrix[0].length+1][j+1].setText(String.format("%.1f", 100*((double) confMatrix[j][j])/sum)+"%");
-			} else {
-				jLabelConfMatrix[confMatrix[0].length+1][j+1].setText("-%");
-			}
-		}
-		// updates total percentage
-		int totalSum = 0;
-		int correctSum = 0;
-		for (int i = 0; i < confMatrix[0].length; i++) {
+			// updates column percentages
 			for (int j = 0; j < confMatrix[0].length; j++) {
-				totalSum += confMatrix[i][j];
-				if (i == j) {
-					correctSum += confMatrix[i][j];
+				int sum = 0;
+				for (int i = 0; i < confMatrix[0].length; i++) {
+					sum += confMatrix[i][j];
+				}
+				if (sum > 0) {
+					jLabelConfMatrix[confMatrix[0].length+1][j+1].setText(String.format("%.1f", 100*((double) confMatrix[j][j])/sum)+"%");
+				} else {
+					jLabelConfMatrix[confMatrix[0].length+1][j+1].setText("-%");
 				}
 			}
-		}
-		if (correctSum > 0) {
-			jLabelConfMatrix[confMatrix[0].length+1][confMatrix[0].length+1].setText(String.format("%.1f", 100*((double) correctSum)/totalSum)+"%");
-		} else {
-			jLabelConfMatrix[confMatrix[0].length+1][confMatrix[0].length+1].setText("-%");
-		}
+			// updates total percentage
+			int totalSum = 0;
+			int correctSum = 0;
+			for (int i = 0; i < confMatrix[0].length; i++) {
+				for (int j = 0; j < confMatrix[0].length; j++) {
+					totalSum += confMatrix[i][j];
+					if (i == j) {
+						correctSum += confMatrix[i][j];
+					}
+				}
+			}
+			if (correctSum > 0) {
+				jLabelConfMatrix[confMatrix[0].length+1][confMatrix[0].length+1].setText(String.format("%.1f", 100*((double) correctSum)/totalSum)+"%");
+			} else {
+				jLabelConfMatrix[confMatrix[0].length+1][confMatrix[0].length+1].setText("-%");
+			}
+		} // synchronized ends here
 	}
 	
 	/**

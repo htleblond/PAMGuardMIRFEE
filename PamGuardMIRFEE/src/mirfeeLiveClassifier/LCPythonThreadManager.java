@@ -79,6 +79,7 @@ public class LCPythonThreadManager{
 	        pythonCommand("os.chdir(r\""+pathname+"\")", getControl().getParams().printInput);
 	        pythonCommand("os.getcwd()", getControl().getParams().printInput);
 	        pythonCommand("import numpy as np", getControl().getParams().printInput);
+	        //pythonCommand("np.set_printoptions(legacy='1.25')", getControl().getParams().printInput);
 	        pythonCommand("import sys", getControl().getParams().printInput);
 	        pythonCommand("import gc", getControl().getParams().printInput);
 		} catch (Exception e) {

@@ -51,3 +51,13 @@ Feature Extractor:
 - Amended some warning dialogs and button text for clarity.
 WMAT:
 - Fixed slight oversight where SQLite databases saved with the .db extension would be interpreted as MySQL databases.
+
+1.07d (April 25th, 2025)
+Batch file:
+- NumPy version set to 1.26.4, as some libraries do not seem to work properly with more recent versions.
+- matplotlib, IPython, num2words, and colour removed from the pip install list, as they were originally used in testing and kept in by accident.
+General:
+- Fixed some issues in Python scripts where NumPy would print variables with the type attached, causing number format exceptions.
+Live Classifier:
+- Potentially fixed synchronization bug in viewer mode where the WMAT's update process would cause a null pointer exception when the Live Classifier's confusion matrix is reset via the settings dialog.
+- Removed an annoying print statement that was accidentally left in after testing.

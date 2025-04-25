@@ -21,6 +21,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 class LCModel():
     def __init__(self, trainFN: str, txtParams: list, excludeIDs: list, excludeFolds: list, doBestFeatures: bool):
         try:
+            #np.set_printoptions(legacy='1.25')
             self.trainFN = trainFN
             self.excludeIDs = excludeIDs
             self.excludeFolds = excludeFolds;
@@ -270,6 +271,7 @@ class LCModel():
 
 class ModelManager():
     def __init__(self):
+        #np.set_printoptions(legacy='1.25')
         self.modelList = []
         
     def addModel(self, newModel: LCModel):

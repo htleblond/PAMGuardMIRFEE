@@ -156,6 +156,7 @@ public class FEPythonThreadManager {
 		            pythonCommand("os.chdir(r\""+pathname+"\")");
 		            pythonCommand("os.getcwd()");
 		            pythonCommand("import numpy as np");
+		            //pythonCommand("np.set_printoptions(legacy='1.25')");
 		            String pyParams = feControl.getParams().outputPythonParamsToText();
 		            if (pyParams.length() > 0) {
 		            	pythonCommand("txtParams = "+pyParams);
