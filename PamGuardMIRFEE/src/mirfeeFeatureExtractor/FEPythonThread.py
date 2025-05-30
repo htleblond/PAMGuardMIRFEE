@@ -42,23 +42,24 @@ class FEThread():
         #self.txtParams = txtParams
         self.inputType = txtParams[0] # "detector", "wmat", or "mtsf"
         self.sr = int(txtParams[1])
-        self.audioAutoClipLength = txtParams[2]
-        self.audioClipLength = txtParams[3]
-        self.audioSTFTLength = txtParams[4]
-        self.audioHopSize = txtParams[5]
-        self.audioWindowFunction = txtParams[6]
-        self.audioNormalizeChecked = txtParams[7]
-        self.audioHPFChecked = txtParams[8]
-        self.audioHPFThreshold = txtParams[9]
-        self.audioHPFMagnitude = txtParams[10]
-        self.audioLPFChecked = txtParams[11]
-        self.audioLPFThreshold = txtParams[12]
-        self.audioLPFMagnitude = txtParams[13]
-        self.audioNRChecked = txtParams[14]
-        self.audioNRStart = txtParams[15]
-        self.audioNRLength = txtParams[16]
-        self.audioNRScalar = txtParams[17]
-        self.features = txtParams[18]
+        self.outputDecimalLimit = txtParams[2]
+        self.audioAutoClipLength = txtParams[3]
+        self.audioClipLength = txtParams[4]
+        self.audioSTFTLength = txtParams[5]
+        self.audioHopSize = txtParams[6]
+        self.audioWindowFunction = txtParams[7]
+        self.audioNormalizeChecked = txtParams[8]
+        self.audioHPFChecked = txtParams[9]
+        self.audioHPFThreshold = txtParams[10]
+        self.audioHPFMagnitude = txtParams[11]
+        self.audioLPFChecked = txtParams[12]
+        self.audioLPFThreshold = txtParams[13]
+        self.audioLPFMagnitude = txtParams[14]
+        self.audioNRChecked = txtParams[15]
+        self.audioNRStart = txtParams[16]
+        self.audioNRLength = txtParams[17]
+        self.audioNRScalar = txtParams[18]
+        self.features = txtParams[19]
         self.featureProcessList, self.featureProcessIndexes = self.featuresToProcess(self.features)
         if self.audioNRChecked and len(y_nr) > 0:
             self.y_nr_stft = librosa.stft(y_nr, n_fft=self.audioSTFTLength, hop_length=self.audioHopSize, \
@@ -148,11 +149,29 @@ class FEThread():
         else: # self.inputType == "detector"
             outp = [headerData.pe_cluster_id, headerData.uid, headerData.datelong, headerData.duration, headerData.freqhd_min, headerData.freqhd_max]
         for i in np.arange(len(self.features)):
+            outp_val = 0.0
             if self.featureProcessIndexes[i] == -1:
-                outp.append(self.extractIndividualFeature(self.features[i], [], headerData))
+                outp_val = self.extractIndividualFeature(self.features[i], [], headerData)
             else:
-                outp.append(self.extractIndividualFeature(self.features[i], preCalcFeatures[self.featureProcessIndexes[i]], headerData))
+                outp_val = self.extractIndividualFeature(self.features[i], preCalcFeatures[self.featureProcessIndexes[i]], headerData)
+            if self.outputDecimalLimit:
+                outp_val = self.limitTo3Decimals(outp_val)
+            outp.append(outp_val)
         return outp
+    
+    def limitTo3Decimals(self, outp_val):
+        if outp_val == 0:
+            return 0
+        split = str(outp_val).split(".")
+        if outp_val >= 1 and len(split) == 2 and len(split[1]) > 3:
+            return float("{:.3f}".format(outp_val))
+        elif outp_val < 1:
+            first_nonzero = 0
+            while split[1][first_nonzero] == "0":
+                first_nonzero += 1
+            format_str = "{:."+str(first_nonzero+3)+"f}"
+            return float(format_str.format(outp_val))
+        return outp_val
     
     # Parses through input settings and creates a list of what to process, while making sure it doesn't process the same thing if used by the
     # same feature with marginally different settings.

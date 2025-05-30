@@ -47,9 +47,8 @@ public class FEControl extends MIRFEEControlledUnit implements PamSettings {
 		
 		feSettingsDialog = null;
 		
-		runTempFolderDialogLoop("MIRFEE Feature Extractor", "Feature Extractor", feParameters);
-		
 		if (!this.isViewer()) {
+			runTempFolderDialogLoop("MIRFEE Feature Extractor", "Feature Extractor", feParameters);
 			this.threadManager = new FEPythonThreadManager(this);
 		}
 		

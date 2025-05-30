@@ -61,3 +61,13 @@ General:
 Live Classifier:
 - Potentially fixed synchronization bug in viewer mode where the WMAT's update process would cause a null pointer exception when the Live Classifier's confusion matrix is reset via the settings dialog.
 - Removed an annoying print statement that was accidentally left in after testing.
+
+1.07e (May 29th, 2025)
+Batch File:
+- --upgrade --user tags removed from pip install commands, as well as the pip upgrade command.
+General:
+- The Python thread managers (and temp folder dialogs) for the Feature Extractor and Live Classifier have been disabled in viewer mode, as they aren't actually used there.
+Feature Extractor:
+- Added an option to limit all output feature values that are greater than 0.01 to 3 decimal points, which is enabled by default, in order to save space.
+Live Classifier:
+- Minor deprecated code fixed in binary module header object.

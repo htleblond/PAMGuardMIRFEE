@@ -89,6 +89,7 @@ public class FESettingsDialog extends PamDialog {
 	protected JTextField outputDataField;
 	protected JButton outputDataButton;
 	protected JButton outputImportSettingsButton;
+	protected JCheckBox outputDecimalLimitCheck;
 	
 	protected SourcePanel audioSourcePanel;
 	protected ButtonGroup dynamicOrStatic;
@@ -291,6 +292,9 @@ public class FESettingsDialog extends PamDialog {
 		outputImportSettingsButton = new JButton("Import settings and features from output file");
 		outputImportSettingsButton.addActionListener(new ImportSettingsListener());
 		outputDataPanel.add(outputImportSettingsButton, c);
+		c.gridy++;
+		outputDecimalLimitCheck = new JCheckBox("Limit values to three decimal places after zeroes");
+		outputDataPanel.add(outputDecimalLimitCheck, c);
 		outputFP1.add(outputDataPanel);
 		mainPanel2.add(outputFP1, b);
 		
@@ -1723,6 +1727,7 @@ public class FESettingsDialog extends PamDialog {
 			outputDataField.setText("No file selected.");
 			//featureImportLoadedButton.setEnabled(false);
 		}
+		outputDecimalLimitCheck.setSelected(params.outputDecimalLimit);
 		if (params.audioSourceProcessName.length() > 0) {
 			if (!audioSourcePanel.setSource(params.audioSourceProcessName)) {
 				// Sets to source set in params in IF statement. Don't worry about this.
@@ -2113,6 +2118,7 @@ public class FESettingsDialog extends PamDialog {
 				} else if (res == JOptionPane.CANCEL_OPTION) return false;
 			}
 		}
+		newParams.outputDecimalLimit = outputDecimalLimitCheck.isSelected();
 		
 		// And finally the input stuff.
 		newParams.inputFromWMATorMTSF = inputDataRB.isSelected();

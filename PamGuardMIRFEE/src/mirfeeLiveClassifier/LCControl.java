@@ -54,9 +54,11 @@ public class LCControl extends MIRFEEControlledUnit implements PamSettings {
 		
 		tabPanel = new LCTabPanel(this);
 		
-		runTempFolderDialogLoop("MIRFEE Live Classifier", "Live Classifier", parameters);
+		if (!this.isViewer) {
+			runTempFolderDialogLoop("MIRFEE Live Classifier", "Live Classifier", parameters);
+			threadManager = new LCPythonThreadManager(this);
+		}
 		
-		threadManager = new LCPythonThreadManager(this);
 		process = new LCProcess(this);
 		addPamProcess(process);
 		

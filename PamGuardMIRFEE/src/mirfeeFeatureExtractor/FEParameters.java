@@ -34,6 +34,7 @@ public class FEParameters extends MIRFEEParameters {
 	//public boolean outputDataChecked;
 	public int outputDataOption;
 	public String outputDataName;
+	public boolean outputDecimalLimit;
 	
 	public String audioSourceProcessName;
 	public boolean audioAutoClipLength;
@@ -99,6 +100,7 @@ public class FEParameters extends MIRFEEParameters {
 		//this.outputDataChecked = false;
 		this.outputDataOption = OUTPUT_NONE;
 		this.outputDataName = "";
+		this.outputDecimalLimit = true;
 		
 		this.audioSourceProcessName = "";
 		this.audioAutoClipLength = true;
@@ -247,6 +249,7 @@ public class FEParameters extends MIRFEEParameters {
 		} else
 			outp += "\"detector\",";
 		outp += String.valueOf(sr)+",";
+		outp += WordUtils.capitalize(String.valueOf(outputDecimalLimit))+",";
 		outp += WordUtils.capitalize(String.valueOf(audioAutoClipLength))+",";
 		outp += String.valueOf(audioClipLength)+",";
 		outp += String.valueOf(audioSTFTLength)+",";

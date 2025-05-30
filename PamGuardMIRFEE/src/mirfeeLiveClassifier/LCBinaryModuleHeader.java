@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import PamModel.parametermanager.ManagedParameters;
 import PamModel.parametermanager.PamParameterSet;
+import PamModel.parametermanager.PamParameterSet.ParameterSetType;
 import binaryFileStorage.BinaryHeader;
 import binaryFileStorage.BinaryObjectData;
 import binaryFileStorage.ModuleHeader;
@@ -21,6 +22,7 @@ public class LCBinaryModuleHeader extends ModuleHeader implements Serializable, 
 
 	public LCBinaryModuleHeader(int moduleVersion) {
 		super(moduleVersion);
+		//System.out.println("LCBinaryModuleHeader initialized");
 	}
 
 	@Override
@@ -30,7 +32,9 @@ public class LCBinaryModuleHeader extends ModuleHeader implements Serializable, 
 	
 	@Override
 	public PamParameterSet getParameterSet() {
-		PamParameterSet ps = PamParameterSet.autoGenerate(this);
+		//System.out.println("LCBinaryModuleHeader.getParameterSet() called");
+		PamParameterSet ps = PamParameterSet.autoGenerate(this, ParameterSetType.DETECTOR);
+		//PamParameterSet ps = PamParameterSet.autoGenerate(this);
 		return ps;
 	}
 }

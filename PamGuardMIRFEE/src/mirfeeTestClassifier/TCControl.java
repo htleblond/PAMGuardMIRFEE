@@ -38,6 +38,7 @@ public class TCControl extends LCControl {
 		tabPanel = new TCTabPanel(this);
 		sidePanel = new TCSidePanel(this);
 		
+		// Specifically for the Test Classifier, this is done for both normal mode and viewer mode, as the Python script can be used in either.
 		runTempFolderDialogLoop("MIRFEE Test Classifier", "Test Classifier", parameters);
 	/*	if (parameters.tempFolder.length() == 0) {
 			LCTempFolderDialog tfDialog = new LCTempFolderDialog(this.getGuiFrame(), this, "MIRFEE Test Classifier", "Test Classifier");
@@ -49,7 +50,6 @@ public class TCControl extends LCControl {
 				tfDialog.setVisible(true);
 			}
 		} */
-		
 		threadManager = new TCPythonThreadManager(this);
 		this.removePamProcess(process);
 		process = new TCProcess(this);
