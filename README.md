@@ -24,6 +24,11 @@ Under "Utilities" (Viewer-mode only):
 2. Run the .bat file from the latest release. (Note to Python developers: Check the .bat file first in case it creates any conflicts!)
 3. Place the .jar file from the latest release into your version of PAMGuard's "plugins" folder.
 
+## Citation
+If you wish to cite this plugin in a publication, please cite the following:
+
+LeBlond, H.T., Quayle, L.S., and Yurk, H. 2025. Evaluating the performance of the MIRFEE classifier plugin for PAMGuard at differentiating between whale vocalizations and anthropogenic noise in the Salish Sea. Can. Tech. Rep. Fish. Aquat. Sci. 3699: iv + 28 p. https://doi.org/10.60825/fmjr-ze05
+
 ## (More-than-likely-to-be-FA)Qs
 - **Is this plugin a training model in itself?** - Technically, no. It's more a tool for creating models by building your own training sets out of manually-annotated data.
 - **Does this actually work?** - Depending on the context, either "mostly" or "maybe". For our own orca-detection purposes, we're still developing a training set that can reliably differentiate killer whale detections from vessels and humpbacks. Our best test runs up to this point have managed to get accuracies between 85 and 90%, which means we're on to something, but clearly need to do better in order for it to be reliable for tracking whales. The methods are primarily based off of those used in the Orchive (https://arxiv.org/pdf/1307.0589.pdf), but with some major differences and a bunch of new experimental stuff thrown in. However, if you have your own WMD data with whatever species you want to be able to automatically tell apart, feel free to create your own training sets, and if not, the WMAT is at least pretty useful for easy annotation.
