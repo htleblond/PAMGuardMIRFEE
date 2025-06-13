@@ -25,7 +25,7 @@ Under "Utilities" (Viewer-mode only):
 3. Place the .jar file from the latest release into your version of PAMGuard's "plugins" folder.
 
 ## Citation
-If you wish to cite this plugin in a publication, please cite the following:
+If you wish to cite this plugin in a publication, please use the following:
 
 LeBlond, H.T., Quayle, L.S., and Yurk, H. 2025. Evaluating the performance of the MIRFEE classifier plugin for PAMGuard at differentiating between whale vocalizations and anthropogenic noise in the Salish Sea. Can. Tech. Rep. Fish. Aquat. Sci. 3699: iv + 28 p. https://doi.org/10.60825/fmjr-ze05
 
