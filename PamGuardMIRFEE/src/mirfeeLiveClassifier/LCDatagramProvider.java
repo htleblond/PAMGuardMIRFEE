@@ -45,6 +45,7 @@ public class LCDatagramProvider implements DatagramProvider {
 		} catch (Exception e) {
 			//
 		}
+		//System.out.println(dataGramLine[cc.labelList.indexOf(cc.getPredictedSpeciesString())]);
 		return totalPoints;
 	}
 

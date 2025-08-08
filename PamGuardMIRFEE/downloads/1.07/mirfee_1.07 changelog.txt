@@ -71,3 +71,9 @@ Feature Extractor:
 - Added an option to limit all output feature values that are greater than 0.01 to 3 decimal points, which is enabled by default, in order to save space.
 Live Classifier:
 - Minor deprecated code fixed in binary module header object.
+
+1.07f (August 07th, 2025)
+Live Classifier:
+- Aliases can now be saved into and loaded from text files.
+WMAT:
+- Loading binary data no longer stops completely if one file happens to be corrupted.

@@ -955,58 +955,65 @@ public class WMATPanel {
 		try {
 			reader = new WMATBinaryReader(wmatControl, inpfile.getPath(), wmDetector);
 		} catch (Exception e2){
-			fileField.setText("Load error - see console.");
+			//fileField.setText("Load error - see console.");
 			System.out.println("Could not find file: " + inpfile.getPath());
 			return;
 		}
-		if (reader.bh.getModuleType().equals("WhistlesMoans") && reader.bh.getStreamName().equals("Contours")) {
-			currformat = reader.bh.getHeaderFormat();
-			BinaryObjectData curr = reader.nextData(currformat);
-			int num = 0;
-			while(true){
-				num++;
-				curr = reader.nextData(currformat);
-				DataUnitBaseData dubd = null;
-				if (currformat >= 3) {
-					dubd = curr.getDataUnitBaseData();
-				}
-				if (curr.getObjectType() != -4){
-					long detectionTime = MIRFEEControlledUnit.convertFromLocalToUTC(curr.getTimeMilliseconds());
-					long fileTime = MIRFEEControlledUnit.convertFromLocalToUTC(reader.bh.getDataDate());
-					Date detectionDate = new Date(detectionTime);
-					Date fileDate = new Date(fileTime);
-					
-					String date_format = "yyyy-MM-dd HH:mm:ss+SSS";
-					SimpleDateFormat currdateformat = new SimpleDateFormat(date_format);
-					String detectionDateString = currdateformat.format(detectionDate);
-					String fileDateString = currdateformat.format(fileDate);
-					
-					if (detectionDateString == null || fileDateString == null) continue;
-					if (!binaryFileDates.contains(fileDateString))
-						binaryFileDates.add(fileDateString);
-					if (!(dubd.getUID() <= 0 && detectionDateString.equals("1970-01-01 00:00:00+000"))) {
-						if (currformat > 3) {
-							double[] freqs = dubd.getFrequency();
-							//double dur = dubd.getSampleDuration(); //Millisecond version doesn't work
-							//double amp = dubd.getCalculatedAmlitudeDB(); //THIS DOESN'T ACTUALLY WORK
-							// THE ABOVE TWO VARIABLES ARE LOADED IN THROUGH THE DATABASE INSTEAD
-							dtmodel.addRow(new Object[]{dubd.getUID(), detectionDateString,
-									(int)freqs[0], (int)freqs[1], -1, -1, "", "", ""});
-						} else  if (currformat == 3){
-							dtmodel.addRow(new Object[]{dubd.getUID(), detectionDateString,
-									-1, -1, -1, -1, "", "", ""});
-						} else {
-							dtmodel.addRow(new Object[]{-1, detectionDateString,
-									-1, -1, -1, -1, "", "", ""});
-						}
-						crduMap.put(String.valueOf(dubd.getUID())+", "+detectionDateString,
-								reader.getDataAsDataUnit(curr, reader.bh, reader.bh.getHeaderFormat()));
+		try {
+			if (reader.bh.getModuleType().equals("WhistlesMoans") && reader.bh.getStreamName().equals("Contours")) {
+				currformat = reader.bh.getHeaderFormat();
+				BinaryObjectData curr = reader.nextData(currformat);
+				int num = 0;
+				while(true){
+					num++;
+					curr = reader.nextData(currformat);
+					DataUnitBaseData dubd = null;
+					if (currformat >= 3) {
+						dubd = curr.getDataUnitBaseData();
 					}
-				} else {
-					break;
+					if (curr.getObjectType() != -4){
+						long detectionTime = MIRFEEControlledUnit.convertFromLocalToUTC(curr.getTimeMilliseconds());
+						long fileTime = MIRFEEControlledUnit.convertFromLocalToUTC(reader.bh.getDataDate());
+						Date detectionDate = new Date(detectionTime);
+						Date fileDate = new Date(fileTime);
+						
+						String date_format = "yyyy-MM-dd HH:mm:ss+SSS";
+						SimpleDateFormat currdateformat = new SimpleDateFormat(date_format);
+						String detectionDateString = currdateformat.format(detectionDate);
+						String fileDateString = currdateformat.format(fileDate);
+						
+						if (detectionDateString == null || fileDateString == null) continue;
+						if (!binaryFileDates.contains(fileDateString))
+							binaryFileDates.add(fileDateString);
+						if (!(dubd.getUID() <= 0 && detectionDateString.equals("1970-01-01 00:00:00+000"))) {
+							if (currformat > 3) {
+								double[] freqs = dubd.getFrequency();
+								//double dur = dubd.getSampleDuration(); //Millisecond version doesn't work
+								//double amp = dubd.getCalculatedAmlitudeDB(); //THIS DOESN'T ACTUALLY WORK
+								// THE ABOVE TWO VARIABLES ARE LOADED IN THROUGH THE DATABASE INSTEAD
+								dtmodel.addRow(new Object[]{dubd.getUID(), detectionDateString,
+										(int)freqs[0], (int)freqs[1], -1, -1, "", "", ""});
+							} else  if (currformat == 3){
+								dtmodel.addRow(new Object[]{dubd.getUID(), detectionDateString,
+										-1, -1, -1, -1, "", "", ""});
+							} else {
+								dtmodel.addRow(new Object[]{-1, detectionDateString,
+										-1, -1, -1, -1, "", "", ""});
+							}
+							crduMap.put(String.valueOf(dubd.getUID())+", "+detectionDateString,
+									reader.getDataAsDataUnit(curr, reader.bh, reader.bh.getHeaderFormat()));
+						}
+					} else {
+						break;
+					}
 				}
+				binaryFileDates.sort(null);
 			}
-			binaryFileDates.sort(null);
+		} catch (NullPointerException npe) {
+			System.out.println("Binary header not found in file: " + inpfile.getPath());
+		} catch (Exception e2) {
+			System.out.println("Error reading file: " + inpfile.getPath());
+			e2.printStackTrace();
 		}
 		reader.closeReader();
 	}

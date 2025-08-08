@@ -7,16 +7,22 @@ import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import PamView.dialog.PamDialog;
 import PamView.dialog.PamGridBagContraints;
@@ -37,6 +43,8 @@ public class LCAliasDialog extends PamDialog {
 	protected JPanel buttonPanel;
 	protected JButton addButton;
 	protected JButton removeButton;
+	protected JButton loadButton;
+	protected JButton saveButton;
 	
 	protected String[] loadedClasses;
 	protected ArrayList<String> currentAliasesList;
@@ -72,13 +80,19 @@ public class LCAliasDialog extends PamDialog {
 		mainPanel.add(selectionSuperPanel, b);
 		
 		b.gridy++;
-		buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		buttonPanel = new JPanel(new GridLayout(2, 2, 5, 5));
 		addButton = new JButton("Add");
 		addButton.addActionListener(new AddListener());
 		buttonPanel.add(addButton);
 		removeButton = new JButton("Remove");
 		removeButton.addActionListener(new RemoveListener(this));
 		buttonPanel.add(removeButton);
+		loadButton = new JButton("Load config");
+		loadButton.addActionListener(new LoadListener(this));
+		buttonPanel.add(loadButton);
+		saveButton = new JButton("Save config");
+		saveButton.addActionListener(new SaveListener(this));
+		buttonPanel.add(saveButton);
 		mainPanel.add(buttonPanel, b);
 		
 		this.setDialogComponent(mainPanel);
@@ -170,6 +184,96 @@ public class LCAliasDialog extends PamDialog {
 			currentAliasesList.remove(removedAlias);
 			currentAliasesMap.remove(removedAlias);
 			updateSelectionPanel();
+		}
+		
+	}
+	
+	class LoadListener implements ActionListener {
+		
+		private LCAliasDialog dialogPane;
+		
+		public LoadListener(LCAliasDialog dialogPane) {
+			this.dialogPane = dialogPane;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JFileChooser fc = new JFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+			fc.setAcceptAllFileFilterUsed(false);
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("Text file (*.txt)","txt"));
+			int returnVal = fc.showOpenDialog(dialogPane);
+			if (returnVal != fc.APPROVE_OPTION) return;
+			currentAliasesList.clear();
+			currentAliasesMap.clear();
+			ArrayList<String> labelList = new ArrayList<String>();
+			for (int i = 0; i < loadedClasses.length; i++)
+				labelList.add(loadedClasses[i]);
+			File f = fc.getSelectedFile();
+			Scanner sc;
+			try {
+				sc = new Scanner(f);
+				while (sc.hasNextLine()) {
+					String[] split = sc.nextLine().split(": ");
+					if (split.length < 2 || currentAliasesList.contains(split[0])) continue;
+					currentAliasesList.add(split[0]);
+					currentAliasesMap.put(split[0], split[1]);
+				}
+				updateSelectionPanel();
+				sc.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		
+	}
+	
+	class SaveListener implements ActionListener {
+		
+		private LCAliasDialog dialogPane;
+		
+		public SaveListener(LCAliasDialog dialogPane) {
+			this.dialogPane = dialogPane;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (currentAliasesList.size() == 0) {
+				lcControl.simpleErrorDialog("No aliases have been created yet.");
+				return;
+			}
+			JFileChooser fc = new JFileChooser();
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+			fc.setAcceptAllFileFilterUsed(false);
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("Text file (*.txt)","txt"));
+			int returnVal = fc.showSaveDialog(dialogPane);
+			if (returnVal != fc.APPROVE_OPTION) return;
+			File f = fc.getSelectedFile();
+			if (!f.getAbsolutePath().endsWith(".txt"))
+				f = new File(f.getAbsolutePath()+".txt");
+			if (f.exists()) {
+				int res = JOptionPane.showConfirmDialog(dialogPane,
+						"Overwrite selected file?",
+						lcControl.getUnitName(),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+				if (res != JOptionPane.YES_OPTION) return;
+			}
+			try {
+				PrintWriter pw = new PrintWriter(f);
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < currentAliasesList.size(); i++) {
+					String key = currentAliasesList.get(i);
+					sb.append(key+": "+currentAliasesMap.get(key)+"\n");
+				}
+				pw.write(sb.toString());
+				pw.flush();
+				pw.close();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 	}
