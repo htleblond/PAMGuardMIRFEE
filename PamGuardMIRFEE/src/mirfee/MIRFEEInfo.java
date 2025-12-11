@@ -15,7 +15,7 @@ public abstract class MIRFEEInfo {
 	}
 	
 	public static String getVersion() {
-		return "1.07f";
+		return "1.07g";
 	}
 	
 	public static String getPamVerDevelopedOn() {

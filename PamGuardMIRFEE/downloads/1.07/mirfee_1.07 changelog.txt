@@ -72,8 +72,13 @@ Feature Extractor:
 Live Classifier:
 - Minor deprecated code fixed in binary module header object.
 
-1.07f (August 07th, 2025)
+1.07f (August 7th, 2025)
 Live Classifier:
 - Aliases can now be saved into and loaded from text files.
 WMAT:
 - Loading binary data no longer stops completely if one file happens to be corrupted.
+
+1.07g (December 10th, 2025)
+WMAT:
+- Fixed bug where the database table name would always change back to "whistle_and_moan_detector" after startup, even though the saved name appears in the startup settings dialog.
+- Loading database data no longer stops completely if one entry happens to be corrupted.

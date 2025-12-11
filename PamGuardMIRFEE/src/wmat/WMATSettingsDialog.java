@@ -643,7 +643,7 @@ public class WMATSettingsDialog extends PamDialog {
 			return false;
 		}
 		
-		if (!sqlTableField.getText().equals(wmatControl.getParams().sqlTableName)) {
+		if (startup || !sqlTableField.getText().equals(wmatControl.getParams().sqlTableName)) {
 			if (!startup) {
 				int result = JOptionPane.showConfirmDialog(parentFrame,
 						"The SQL table name has been changed, therefore the database should be manually re-connected to."

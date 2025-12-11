@@ -184,50 +184,54 @@ public class WMATSQLLogging {
 			dbList = new ArrayList<String>();
 			int rownum = -1;
 			while (rs.next()) {
-				String datetime = convertDate(String.valueOf(rs.getTimestamp("UTC")).substring(0, 19),
-						rs.getShort("UTCMilliseconds"), false);
-				String entry = String.valueOf(rs.getLong("UID")) + " - " + datetime;
-				dbSet.add(entry);
-				dbList.add(entry);
-				rownum = findRow(String.valueOf(rs.getLong("UID")), datetime);
-				WMATAnnotationInfo ai = new WMATAnnotationInfo();
-				if (rownum != -1 && overwrite == true) {
-					if (rs.getInt("startSample") > -1 && rs.getDouble("startSeconds") > -1 && rs.getInt("duration") > -1) {
-						int sr = (int) (rs.getInt("startSample") / rs.getDouble("startSeconds"));
-						int dur = (int) (1000 * (double) rs.getInt("duration") / sr);
-						ttable.setValueAt(dur, rownum, 4);
-					} else {
-						ttable.setValueAt(-1, rownum, 4);
-					}
-					if (rs.getDouble("amplitude") > -1) {
-						ttable.setValueAt((int) rs.getDouble("amplitude"), rownum, 5);
-					} else {
-						ttable.setValueAt(-1, rownum, 5);
-					}
-					if (rs.getString("species") != null) {
-						ttable.setValueAt(rs.getString("species"), rownum, 6);
-						ai.species = rs.getString("species");
-						if (wmatControl.getSidePanel().getWMATPanel().speciesModel.getIndexOf(rs.getString("species")) == -1) {
-							wmatControl.getSidePanel().getWMATPanel().speciesModel.addElement(rs.getString("species"));
+				try {
+					String datetime = convertDate(String.valueOf(rs.getTimestamp("UTC")).substring(0, 19),
+							rs.getShort("UTCMilliseconds"), false);
+					String entry = String.valueOf(rs.getLong("UID")) + " - " + datetime;
+					dbSet.add(entry);
+					dbList.add(entry);
+					rownum = findRow(String.valueOf(rs.getLong("UID")), datetime);
+					WMATAnnotationInfo ai = new WMATAnnotationInfo();
+					if (rownum != -1 && overwrite == true) {
+						if (rs.getInt("startSample") > -1 && rs.getDouble("startSeconds") > -1 && rs.getInt("duration") > -1) {
+							int sr = (int) (rs.getInt("startSample") / rs.getDouble("startSeconds"));
+							int dur = (int) (1000 * (double) rs.getInt("duration") / sr);
+							ttable.setValueAt(dur, rownum, 4);
+						} else {
+							ttable.setValueAt(-1, rownum, 4);
 						}
-					} else {
-						ttable.setValueAt("", rownum, 6);
-					}
-					if (rs.getString("callType") != null) {
-						ttable.setValueAt(rs.getString("callType"), rownum, 7);
-						ai.callType = rs.getString("callType");
-						if (wmatControl.getSidePanel().getWMATPanel().calltypeModel.getIndexOf(rs.getString("callType")) == -1) {
-							wmatControl.getSidePanel().getWMATPanel().calltypeModel.addElement(rs.getString("callType"));
+						if (rs.getDouble("amplitude") > -1) {
+							ttable.setValueAt((int) rs.getDouble("amplitude"), rownum, 5);
+						} else {
+							ttable.setValueAt(-1, rownum, 5);
 						}
-					} else {
-						ttable.setValueAt("", rownum, 7);
+						if (rs.getString("species") != null) {
+							ttable.setValueAt(rs.getString("species"), rownum, 6);
+							ai.species = rs.getString("species");
+							if (wmatControl.getSidePanel().getWMATPanel().speciesModel.getIndexOf(rs.getString("species")) == -1) {
+								wmatControl.getSidePanel().getWMATPanel().speciesModel.addElement(rs.getString("species"));
+							}
+						} else {
+							ttable.setValueAt("", rownum, 6);
+						}
+						if (rs.getString("callType") != null) {
+							ttable.setValueAt(rs.getString("callType"), rownum, 7);
+							ai.callType = rs.getString("callType");
+							if (wmatControl.getSidePanel().getWMATPanel().calltypeModel.getIndexOf(rs.getString("callType")) == -1) {
+								wmatControl.getSidePanel().getWMATPanel().calltypeModel.addElement(rs.getString("callType"));
+							}
+						} else {
+							ttable.setValueAt("", rownum, 7);
+						}
+						if (rs.getString("comment") != null) {
+							ttable.setValueAt(rs.getString("comment"), rownum, 8);
+							ai.comment = rs.getString("comment");
+						} else {
+							ttable.setValueAt("", rownum, 8);
+						}
 					}
-					if (rs.getString("comment") != null) {
-						ttable.setValueAt(rs.getString("comment"), rownum, 8);
-						ai.comment = rs.getString("comment");
-					} else {
-						ttable.setValueAt("", rownum, 8);
-					}
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
 				databaseLoadingBarWindow.addOneToLoadingBar();
 			}
