@@ -378,7 +378,8 @@ public class FEProcess extends PamProcess {
 		
 		private PamDataBlock dataBlock;
 		protected FEProcess clipProcess;
-		private WavFileWriter wavFile;
+		protected WavFileWriter wavFile;
+		protected WavFileWriter wavFileToSave;
 		
 		/**
 		 * @param dataBlock
@@ -490,6 +491,48 @@ public class FEProcess extends PamProcess {
 				}
 				System.out.println("Could not write file: "+nrPath);
 				return RawDataUnavailableException.DATA_ALREADY_DISCARDED;
+			}
+			if (params.audioSaveChecked && clipWrote) {
+				String clipSavePath = params.audioSaveFolder+"/";
+				if (params.inputFromWMATorMTSF) {
+					String label = "";
+					if (params.inputFilesAreMTSF()) {
+						FETrainingDataUnit tdu = (FETrainingDataUnit) dataUnit;
+						label = tdu.label;
+						String location = tdu.location;
+						location = location.replaceAll("[\\\\/:*?\"<>|]", "_");
+						if (location == null || location.length() == 0)
+							clipSavePath += "Unknown location/";
+						else
+							clipSavePath += location+"/";
+						File dir = new File(clipSavePath);
+						if (!dir.exists())
+							dir.mkdir();
+					} else { // .wmat
+						FESliceDataUnit sdu = (FESliceDataUnit) dataUnit;
+						label = sdu.label;
+					}
+					label = label.replaceAll("[\\\\/:*?\"<>|]", "_");
+					if (label == null || label.length() == 0)
+						clipSavePath += "Unlabelled/";
+					else
+						clipSavePath += label+"/";
+				} else // Direct from WMD
+					clipSavePath += "Unlabelled/";
+				File dir = new File(clipSavePath);
+				if (!dir.exists())
+					dir.mkdir();
+				String dt = FEControl.convertDateLongToString(dataUnit.getTimeMilliseconds());
+				dt = dt.replace("-", "");
+				dt = dt.replace("+", "");
+				dt = dt.replace(":", "");
+				dt = dt.replace(" ", "_");
+				clipSavePath += dt+".wav";
+				wavFileToSave = new WavFileWriter(clipSavePath, af);
+				boolean saveClipWrote = wavFileToSave.write(rawData);
+				wavFileToSave.close();
+				if (!saveClipWrote)
+					System.out.println("FEProcess: Count not save audio clip at "+clipSavePath);
 			}
 			
 			prevDU = dataUnit;

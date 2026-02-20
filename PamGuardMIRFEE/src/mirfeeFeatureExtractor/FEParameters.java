@@ -53,6 +53,8 @@ public class FEParameters extends MIRFEEParameters {
 	public int audioNRStart;
 	public int audioNRLength;
 	public double audioNRScalar;
+	public boolean audioSaveChecked;
+	public String audioSaveFolder;
 	
 	public String[][] featureList;
 	
@@ -119,6 +121,8 @@ public class FEParameters extends MIRFEEParameters {
 		this.audioNRStart = 500;
 		this.audioNRLength = 350;
 		this.audioNRScalar = 1.0;
+		this.audioSaveChecked = false;
+		this.audioSaveFolder = "";
 		
 		this.featureList = new String[0][0];
 		

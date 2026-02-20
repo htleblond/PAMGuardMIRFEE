@@ -36,8 +36,13 @@ public class LCDatagramProvider implements DatagramProvider {
 	public int addDatagramData(PamDataUnit dataUnit, float[] dataGramLine) {
 		//if (lcControl.getParams().printJava)
 		//	System.out.println("Reached addDatagramData");
+		//System.out.println("inInstance: "+String.valueOf(dataUnit instanceof LCDataUnit));
+		if (!(dataUnit instanceof LCDataUnit)) {
+			return 0;
+		}
 		LCDataUnit du = (LCDataUnit) dataUnit;
 		LCCallCluster cc = du.getCluster();
+		//System.out.print("datagram UID: "+String.valueOf(cc.clusterID));
 		int totalPoints = 0;
 		try {
 			dataGramLine[cc.labelList.indexOf(cc.getPredictedSpeciesString())]++;
@@ -46,6 +51,7 @@ public class LCDatagramProvider implements DatagramProvider {
 			//
 		}
 		//System.out.println(dataGramLine[cc.labelList.indexOf(cc.getPredictedSpeciesString())]);
+		//System.out.println("totalPoints: "+String.valueOf(totalPoints));
 		return totalPoints;
 	}
 

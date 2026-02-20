@@ -111,6 +111,8 @@ public class FESettingsDialog extends PamDialog {
 	protected JTextField audioNRLengthField;
 	protected JTextField audioNRScalarField;
 	protected JCheckBox audioSaveCheck;
+	protected JTextField audioSaveFolderField;
+	protected JButton audioSaveFolderButton;
 	
 	protected DefaultTableModel featureTableModel;
 	protected JTable featureTable;
@@ -531,9 +533,18 @@ public class FESettingsDialog extends PamDialog {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.WEST;
 		audioSaveCheck = new JCheckBox();
-		audioSaveCheck.setText("Save audio clips to folder (TBA)");
-		audioSaveCheck.setEnabled(false);
+		audioSaveCheck.setText("Save audio clips to folder");
+		audioSaveCheck.addActionListener(new CheckBoxListener(audioSaveCheck));
 		audioSavePanel.add(audioSaveCheck, c);
+		c.gridy++;
+		audioSaveFolderField = new JTextField(45);
+		audioSaveFolderField.setEnabled(false);
+		audioSavePanel.add(audioSaveFolderField, c);
+		c.gridx += 1;
+		c.fill = c.NONE;
+		audioSaveFolderButton = new JButton("Select folder");
+		audioSaveFolderButton.addActionListener(new AudioSaveFolderListener(this));
+		audioSavePanel.add(audioSaveFolderButton, c);
 		audioFP6.add(audioSavePanel);
 		mainPanel3.add(audioFP6, b);
 		
@@ -907,6 +918,8 @@ public class FESettingsDialog extends PamDialog {
 			audioNRStartField.setEnabled(boo);
 			audioNRLengthField.setEnabled(boo);
 			audioNRScalarField.setEnabled(boo);
+		} else if (box.equals(audioSaveCheck)) {
+			audioSaveFolderButton.setEnabled(boo);
 		} else if (box.equals(miscClusterCheck)) {
 			miscJoinField.setEnabled(boo);
 		} else if (box.equals(miscFileStartCheck)) {
@@ -929,7 +942,7 @@ public class FESettingsDialog extends PamDialog {
 	/**
 	 * For selecting the input .wmat or .mtsf file and checking if it's valid or not.
 	 */
-	class CSVListener implements ActionListener{
+	class CSVListener implements ActionListener {
 		
 		protected FESettingsDialog dialog;
 		protected boolean forOutput;
@@ -1028,6 +1041,25 @@ public class FESettingsDialog extends PamDialog {
 				}
 			}
 		}
+	}
+	
+	class AudioSaveFolderListener implements ActionListener {
+		
+		protected FESettingsDialog dialog;
+		
+		public AudioSaveFolderListener(FESettingsDialog dialog) {
+			this.dialog = dialog;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			PamFileChooser fc = new PamFileChooser();
+			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+			if (fc.showSaveDialog(this.dialog) == fc.APPROVE_OPTION)
+				dialog.audioSaveFolderField.setText(fc.getSelectedFile().getAbsolutePath().replace("\\", "/"));
+		}
+		
 	}
 	
 	/**
@@ -1759,6 +1791,9 @@ public class FESettingsDialog extends PamDialog {
 		audioNRStartField.setText(Integer.toString(params.audioNRStart));
 		audioNRLengthField.setText(Integer.toString(params.audioNRLength));
 		audioNRScalarField.setText(Double.toString(params.audioNRScalar));
+		audioSaveCheck.setSelected(params.audioSaveChecked);
+		switchOn(audioSaveCheck, params.audioSaveChecked);
+		audioSaveFolderField.setText(params.audioSaveFolder);
 		featureTableModel.setRowCount(0);
 		for (int i = 0; i < params.featureList.length; i++) {
 			featureTableModel.addRow(new Object[]{params.featureList[i][0],params.featureList[i][1]});
@@ -1975,6 +2010,9 @@ public class FESettingsDialog extends PamDialog {
 			simpleErrorDialog("Noise removal clip length must be shorter than or of equal length to\n"
 					+ "the start time.");
 			return false;
+		} else if (audioSaveCheck.isSelected() && audioSaveFolderField.getText().length() == 0) {
+			simpleErrorDialog("Folder to save audio clips to has not been selected.");
+			return false;
 		} else if (featureTableModel.getRowCount() == 0) {
 			simpleErrorDialog("No features have been selected.");
 			return false;
@@ -2010,6 +2048,9 @@ public class FESettingsDialog extends PamDialog {
 			newParams.audioNRLength = Integer.valueOf(audioNRLengthField.getText());
 			newParams.audioNRScalar = Double.valueOf(audioNRScalarField.getText());
 		}
+		newParams.audioSaveChecked = audioSaveCheck.isSelected();
+		if (audioSaveCheck.isSelected())
+			newParams.audioSaveFolder = audioSaveFolderField.getText();
 		String[][] tableOutp = new String[featureTable.getModel().getRowCount()][2];
 		for (int i = 0; i < featureTable.getModel().getRowCount(); i++) {
 			tableOutp[i][0] = (String) featureTable.getValueAt(i, 0);

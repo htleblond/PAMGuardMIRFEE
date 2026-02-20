@@ -82,3 +82,7 @@ WMAT:
 WMAT:
 - Fixed bug where the database table name would always change back to "whistle_and_moan_detector" after startup, even though the saved name appears in the startup settings dialog.
 - Loading database data no longer stops completely if one entry happens to be corrupted.
+
+1.07h (February 19th, 2025)
+Feature Extractor:
+- Added ability to save produced audio clips in a separate folder.

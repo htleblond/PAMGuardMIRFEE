@@ -15,6 +15,7 @@ public class FESliceDataUnit extends PamDataUnit {
 	
 	public long[] sliceStartSamples;
 	public double[] sliceFreqs;
+	public String label;
 	
 	public String clusterID; // initially null
 	
@@ -41,6 +42,7 @@ public class FESliceDataUnit extends PamDataUnit {
 			sliceStartSamples[i] = (long) splitList.get(i)[0];
 			sliceFreqs[i] = splitList.get(i)[1];
 		}
+		this.label = inp.label;
 	}
 	
 	public void setClusterID(String clusterID) {
