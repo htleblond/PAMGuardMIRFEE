@@ -19,6 +19,8 @@ Under "Utilities" (Viewer-mode only):
 - **Whistle and Moan Annotation Tool (WMAT)** - Tool for annotating WMD detections and for easier navigation of the spectrogram after processing.
 
 ## Installation
+**NOTE:** The plugin currently relies on versions of NumPy, Librosa and SciPy that are now outdated and don't install properly on versions of Python beyond 3.12. I've included a legacy batch file to install the older packages in the meantime, but this will be the next bug fix. You'll need to use Python 3.12 or older in the meantime.
+
 (You can skip steps 1 and 2 if you're ONLY using the WMAT.)
 1. Install Python 3 and ensure that pip works.
 2. Run the .bat file from the latest release. (Note to Python developers: Check the .bat file first in case it creates any conflicts!)
